@@ -1,6 +1,7 @@
 package models.mocks
 {
 	import interfaces.IBoard;
+	import interfaces.IFloor;
 	import interfaces.IRobot;
 
 	public class MockBoard implements IBoard
@@ -39,7 +40,7 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function moveRobot(robot:IRobot, direction:String):void
+		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
 		{
 		}
 

@@ -6,10 +6,11 @@ package models
 
 	import events.ControllerEvent;
 
-	import interfaces.IGameController;
 	import interfaces.IRobot;
 
 	import models.mocks.MockRobot;
+
+	import org.flexunit.asserts.assertEquals;
 
 	public class PusherTest
 	{
@@ -35,7 +36,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected  var gameController:IGameController;
+		protected  var gameController:MockGameController;
 		protected  var pusher:Pusher;
 
 		//--------------------------------------------------------------------------
@@ -72,14 +73,21 @@ package models
 			pusher.occupant = robot;
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
 
-			//assert that the robot has moved
+			assertEquals(1, gameController.received("moveRobot").count);
+			assertEquals(3, gameController.received("moveRobot").args.length);
+			assertEquals(robot, gameController..received("moveRobot").args[0]);
+			assertEquals(Direction.UP, gameController.received("moveRobot").args[1]);
+			assertEquals(pusher, gameController.received("moveRobot").args[2]);
+
+			pusher.occupant = null;
 
 			//Test when the phase is wrong for the pusher
 			pusher = new Pusher(gameController, Direction.UP);
 			pusher.occupant = robot;
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
 
-			//assert that the robot hasn't moved
+			//TODO: Pushers should have off phases(this should be 1)
+			assertEquals(2, gameController.received("moveRobot").count);
 		}
 
 		//--------------------------------------------------------------------------

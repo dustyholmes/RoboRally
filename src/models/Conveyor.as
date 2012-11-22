@@ -84,7 +84,7 @@ package models
 			if (!occupant)
 				return;
 
-			controller.moveRobot(occupant, direction);
+			controller.moveRobot(occupant, direction, this);
 		}
 
 		protected function conveyEventHandler(event:ControllerEvent):void

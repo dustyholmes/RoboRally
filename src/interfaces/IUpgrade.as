@@ -12,6 +12,6 @@ package interfaces
 
 		function get useCount():Number;
 
-		fucntion get maxUseCount():Number;
+		function get maxUseCount():Number;
 	}
 }

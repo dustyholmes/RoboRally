@@ -6,10 +6,11 @@ package models
 
 	import events.ControllerEvent;
 
-	import interfaces.IGameController;
 	import interfaces.IRobot;
 
 	import models.mocks.MockRobot;
+
+	import org.flexunit.asserts.assertEquals;
 
 	public class GearTest
 	{
@@ -35,7 +36,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected var gameController:IGameController;
+		protected var gameController:MockGameController;
 		protected var gear:Gear;
 
 		//--------------------------------------------------------------------------
@@ -71,7 +72,10 @@ package models
 			gear.occupant = robot;
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.ROTATE));
 
-			//assert that the robot has rotated...
+			assertEquals(1, gameController.received("rotateRobot").count);
+			assertEquals(2, gameController.received("rotateRobot").args.length);
+			assertEquals(robot, gameController.received("rotateRobot").args[0]);
+			assertEquals(Direction.LEFT, gameController.received("rotateRobot").args[1]);
 		}
 
 		//--------------------------------------------------------------------------

@@ -1,8 +1,6 @@
-package models.mocks
+package mocks
 {
-	import interfaces.IUpgrade;
-
-	public class MockUpgrade implements IUpgrade
+	public class SpyResults
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -16,7 +14,7 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function MockUpgrade()
+		public function SpyResults()
 		{
 		}
 
@@ -32,34 +30,27 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function get name():String
+		//----------------------------------
+		//  count
+		//----------------------------------
+		private var _count:int = 0;
+
+		public function get count():int
 		{
-			return "";
+			return _count;
 		}
 
-		public function get description():String
-		{
-			return "";
-		}
+		//----------------------------------
+		//  args
+		//----------------------------------
+		private var _args:Array;
 
-		public function get isElective():Boolean
+		public function get args():Array
 		{
-			return false;
-		}
+			if (!_args)
+				_args = new Array();
 
-		public function get isActive():Boolean
-		{
-			return false;
-		}
-
-		public function get useCount():Number
-		{
-			return 0;
-		}
-
-		public function get maxUseCount():Number
-		{
-			return 0;
+			return _args;
 		}
 
 		//--------------------------------------------------------------------------
@@ -67,6 +58,12 @@ package models.mocks
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
+
+		public function appendResult(args:Array):void
+		{
+			_count++;
+			_args = args
+		}
 
 		//--------------------------------------------------------------------------
 		//

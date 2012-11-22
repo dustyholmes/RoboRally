@@ -1,8 +1,9 @@
-package models.mocks
+package mocks
 {
-	import interfaces.IUpgrade;
+	import flash.events.EventDispatcher;
+	import flash.utils.Dictionary;
 
-	public class MockUpgrade implements IUpgrade
+	public class Mock extends EventDispatcher
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -16,7 +17,7 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function MockUpgrade()
+		public function Mock()
 		{
 		}
 
@@ -26,41 +27,13 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
+		private var _spy:Dictionary = new Dictionary();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		public function get name():String
-		{
-			return "";
-		}
-
-		public function get description():String
-		{
-			return "";
-		}
-
-		public function get isElective():Boolean
-		{
-			return false;
-		}
-
-		public function get isActive():Boolean
-		{
-			return false;
-		}
-
-		public function get useCount():Number
-		{
-			return 0;
-		}
-
-		public function get maxUseCount():Number
-		{
-			return 0;
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -68,11 +41,24 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
+		public function received(method:String):SpyResults
+		{
+			if (!_spy[method])
+				_spy[method] = new SpyResults();
+
+			return _spy[method];
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods
 		//
 		//--------------------------------------------------------------------------
+
+		protected function appendSpyResult(method:String, args:Array):void
+		{
+			received(method).appendResult(args);
+		}
 
 		//--------------------------------------------------------------------------
 		//

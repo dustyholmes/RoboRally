@@ -3,6 +3,7 @@ package controller
 	import flash.events.EventDispatcher;
 
 	import interfaces.IBoard;
+	import interfaces.IFloor;
 	import interfaces.IGameController;
 	import interfaces.IRobot;
 
@@ -49,12 +50,12 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
-		public function moveRobot(robot:IRobot, direction:String):void
+		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
 		{
 			if (!DirectionUtil.isValid(direction))
 				return;
 
-			board.moveRobot(robot, direction);
+			board.moveRobot(robot, direction, currentLocation);
 		}
 
 		public function rotateRobot(robot:IRobot, direction:String):void

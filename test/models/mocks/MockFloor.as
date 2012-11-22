@@ -33,13 +33,19 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
+		//----------------------------------
+		//  occupant
+		//----------------------------------
+		private var _occupant:IRobot;
+
 		public function get occupant():IRobot
 		{
-			return null;
+			return _occupant;
 		}
 
 		public function set occupant(value:IRobot):void
 		{
+			_occupant = value;
 		}
 
 		//--------------------------------------------------------------------------

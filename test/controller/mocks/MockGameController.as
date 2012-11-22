@@ -1,11 +1,12 @@
 package controller.mocks
 {
-	import flash.events.EventDispatcher;
-
+	import interfaces.IFloor;
 	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	public class MockGameController extends EventDispatcher implements IGameController
+	import mocks.Mock;
+
+	public class MockGameController extends Mock implements IGameController
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -34,22 +35,23 @@ package controller.mocks
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		public function moveRobot(robot:IRobot, direction:String):void
-		{
-
-		}
-
-		public function rotateRobot(robot:IRobot, direction:String):void
-		{
-		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
 
+		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
+		{
+			appendSpyResult("moveRobot", [robot, direction, currentLocation]);
+		}
+
+		public function rotateRobot(robot:IRobot, direction:String):void
+		{
+			appendSpyResult("rotateRobot", [robot, direction]);
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods

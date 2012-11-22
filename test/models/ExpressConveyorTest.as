@@ -2,13 +2,17 @@ package models
 {
 	import constants.Direction;
 
+	import controller.mocks.MockGameController;
+
 	import events.ControllerEvent;
 
 	import interfaces.IRobot;
 
 	import models.mocks.MockRobot;
 
-	public class ExpressConveyorTest extends ConveyorTest
+	import org.flexunit.asserts.assertEquals;
+
+	public class ExpressConveyorTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -33,6 +37,9 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
+		protected var gameController:MockGameController;
+		protected var conveyor:ExpressConveyor;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -46,27 +53,31 @@ package models
 		//--------------------------------------------------------------------------
 
 		[Before]
-		public override function setUp():void
+		public function setUp():void
 		{
-			super.setUp();
+			gameController = new MockGameController();
 		}
 
 		[After]
-		public override function tearDown():void
+		public function tearDown():void
 		{
-			super.tearDown();
+			gameController = null;
 		}
 
 		[Test]
 		public function testExpressConvey():void
 		{
-			conveyor = new Conveyor(gameController, Direction.UP);
+			conveyor = new ExpressConveyor(gameController, Direction.UP);
 			var robot:IRobot = new MockRobot();
 			conveyor.occupant = robot;
 
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.EXPRESS_CONVEY));
 
-			//assert that the robot has moved up
+			assertEquals(1, gameController.received("moveRobot").count);
+			assertEquals(3, gameController.received("moveRobot").args.length);
+			assertEquals(robot, gameController..received("moveRobot").args[0]);
+			assertEquals(Direction.UP, gameController.received("moveRobot").args[1]);
+			assertEquals(conveyor, gameController.received("moveRobot").args[2]);
 		}
 
 		//--------------------------------------------------------------------------
