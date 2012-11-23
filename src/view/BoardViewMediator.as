@@ -1,15 +1,12 @@
-package controller
+package view
 {
-	import flash.events.EventDispatcher;
-
 	import interfaces.IBoard;
-	import interfaces.IFloor;
-	import interfaces.IGameController;
-	import interfaces.IRobot;
 
-	import utils.DirectionUtil;
+	import models.BaseFloor;
 
-	public class GameController extends EventDispatcher implements IGameController
+	import view.components.BoardView;
+
+	public class BoardViewMediator
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -23,10 +20,13 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
-		public function GameController(robots:Vector.<IRobot>, board:IBoard)
+		public function BoardViewMediator(board:IBoard)
 		{
-			this.robots = robots;
 			this.board = board;
+
+			this._boardView = new BoardView();
+
+			createChildren();
 		}
 
 		//--------------------------------------------------------------------------
@@ -35,7 +35,6 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
-		protected var robots:Vector.<IRobot>;
 		protected var board:IBoard;
 
 		//--------------------------------------------------------------------------
@@ -45,13 +44,13 @@ package controller
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  register
+		//  boardView
 		//----------------------------------
-		private var _register:int = 1;
+		private var _boardView:BoardView;
 
-		public function get register():int
+		public function get boardView():BoardView
 		{
-			return _register;
+			return _boardView;
 		}
 		//--------------------------------------------------------------------------
 		//
@@ -59,37 +58,26 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
-		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
-		{
-			if (!DirectionUtil.isValid(direction))
-				return;
-
-			board.moveRobot(robot, direction, currentLocation);
-		}
-
-		public function rotateRobot(robot:IRobot, direction:String):void
-		{
-			if (!DirectionUtil.isValidRotation(direction))
-				return;
-
-			robot.rotate(direction);
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods
 		//
 		//--------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------
-		//
-		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
+		protected function createChildren():void
+		{
+			var floorViewMediator:FloorViewMediator;
+
+			for (var i:int = 0; i < 144; i++)
+			{
+				floorViewMediator = new FloorViewMediator(new BaseFloor(null));
+				boardView.addElement(floorViewMediator.floorView);
+			}
+		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overrides
+		//  Private Methods
 		//
 		//--------------------------------------------------------------------------
 	}

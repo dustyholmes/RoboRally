@@ -2,18 +2,31 @@
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark"
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   creationComplete="creationCompleteHandler(event)"
 			   top="0" bottom="0" left="0" right="0">
-	<s:Rect id="boardView" top="0" bottom="30" right="300" left="0">
-		<s:fill>
-			<s:SolidColor color="0x999999" />
-		</s:fill>
-	</s:Rect>
-	<s:Rect id="controlView" top="0" right="0" bottom="30" width="300">
-		<s:fill>
-			<s:SolidColor color="0xCCCCCC"/>
-		</s:fill>
-	</s:Rect>
-	<s:HGroup id="buttonBar" left="0" right="0" bottom="0" horizontalAlign="right" paddingBottom="5" paddingRight="5">
+	<fx:Script><![CDATA[
+		import view.BoardViewMediator;
+
+
+		protected function creationCompleteHandler(event:Event):void
+		{
+			var boardViewMediator:BoardViewMediator = new BoardViewMediator(null);
+			this.boardViewContainer.addElement(boardViewMediator.boardView);
+		}
+	]]></fx:Script>
+
+	<s:layout>
+		<s:VerticalLayout gap="0" />
+	</s:layout>
+	<s:HGroup gap="0">
+		<s:Group id="boardViewContainer"/>
+		<s:Rect id="controlView" height="{boardViewContainer.height}" width="300">
+			<s:fill>
+				<s:SolidColor color="0xCCCCCC"/>
+			</s:fill>
+		</s:Rect>
+	</s:HGroup>
+	<s:HGroup id="buttonBar" width="100%" horizontalAlign="right" paddingBottom="5" paddingRight="5">
 		<s:Button label="Save Map" />
 	</s:HGroup>
 </s:Application>

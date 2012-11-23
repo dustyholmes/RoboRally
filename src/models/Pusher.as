@@ -22,9 +22,11 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function Pusher(controller:IGameController, direction:String)
+		public function Pusher(controller:IGameController, direction:String, phases:Vector.<int>)
 		{
 			super(controller);
+
+			this.registers = phases;
 
 			if (DirectionUtil.isValid(direction))
 				this.direction = direction;
@@ -41,6 +43,7 @@ package models
 		//--------------------------------------------------------------------------
 
 		protected var direction:String;
+		protected var registers:Vector.<int>;
 
 		//--------------------------------------------------------------------------
 		//
@@ -60,9 +63,14 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
+		protected  function isActive():Boolean
+		{
+			return this.registers.indexOf(controller.register) >= 0;
+		}
+
 		protected function pushOccupant():void
 		{
-			if (!occupant)
+			if (!occupant || !isActive())
 				return;
 
 			controller.moveRobot(occupant, direction, this);

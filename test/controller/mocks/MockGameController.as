@@ -35,7 +35,22 @@ package controller.mocks
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
+		//----------------------------------
+		//  register
+		//----------------------------------
+		private var _register:int = 1;
+
+		public function get register():int
+		{
+			return _register;
+		}
+
+		public function set register(value:int):void
+		{
+			_register = value;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods

@@ -68,7 +68,9 @@ package models
 		public function testPushOccupant():void
 		{
 			//Test when the phase is right for the pusher
-			pusher = new Pusher(gameController, Direction.UP);
+			var registers:Vector.<int> = new Vector.<int>();
+			registers.push(1);
+			pusher = new Pusher(gameController, Direction.UP, registers);
 			var robot:IRobot = new MockRobot();
 			pusher.occupant = robot;
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
@@ -82,12 +84,12 @@ package models
 			pusher.occupant = null;
 
 			//Test when the phase is wrong for the pusher
-			pusher = new Pusher(gameController, Direction.UP);
+			gameController.register = 2;
+			pusher = new Pusher(gameController, Direction.UP, registers);
 			pusher.occupant = robot;
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
 
-			//TODO: Pushers should have off phases(this should be 1)
-			assertEquals(2, gameController.received("moveRobot").count);
+			assertEquals(1, gameController.received("moveRobot").count);
 		}
 
 		//--------------------------------------------------------------------------

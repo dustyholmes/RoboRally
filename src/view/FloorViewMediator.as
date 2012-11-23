@@ -1,15 +1,16 @@
-package controller
+package view
 {
-	import flash.events.EventDispatcher;
-
-	import interfaces.IBoard;
 	import interfaces.IFloor;
-	import interfaces.IGameController;
-	import interfaces.IRobot;
 
-	import utils.DirectionUtil;
+	import models.BaseFloor;
+	import models.Conveyor;
+	import models.ExpressConveyor;
+	import models.Gear;
+	import models.Pusher;
 
-	public class GameController extends EventDispatcher implements IGameController
+	import view.components.FloorView;
+
+	public class FloorViewMediator
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -23,10 +24,12 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
-		public function GameController(robots:Vector.<IRobot>, board:IBoard)
+		public function FloorViewMediator(floor:IFloor)
 		{
-			this.robots = robots;
-			this.board = board;
+			this.floor = floor;
+			this._floorView = new FloorView();
+
+			updateViewState();
 		}
 
 		//--------------------------------------------------------------------------
@@ -35,8 +38,7 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
-		protected var robots:Vector.<IRobot>;
-		protected var board:IBoard;
+		protected var floor:IFloor
 
 		//--------------------------------------------------------------------------
 		//
@@ -45,35 +47,20 @@ package controller
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  register
+		//  floorView
 		//----------------------------------
-		private var _register:int = 1;
+		private var _floorView:FloorView;
 
-		public function get register():int
+		public function get floorView():FloorView
 		{
-			return _register;
+			return _floorView;
 		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
-		{
-			if (!DirectionUtil.isValid(direction))
-				return;
-
-			board.moveRobot(robot, direction, currentLocation);
-		}
-
-		public function rotateRobot(robot:IRobot, direction:String):void
-		{
-			if (!DirectionUtil.isValidRotation(direction))
-				return;
-
-			robot.rotate(direction);
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -81,15 +68,31 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------
-		//
-		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
+		protected function updateViewState():void
+		{
+			switch (typeof floor)
+			{
+				case BaseFloor:
+					floorView.currentState = floorView.normalState.name;
+					break;
+				case Conveyor:
+					floorView.currentState = floorView.conveyorState.name;
+					break;
+				case ExpressConveyor:
+					floorView.currentState = floorView.expressState.name;
+					break;
+				case Gear:
+					floorView.currentState = floorView.gearState.name;
+					break;
+				case Pusher:
+					floorView.currentState = floorView.pusherState.name;
+					break;
+			}
+		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overrides
+		//  Private Methods
 		//
 		//--------------------------------------------------------------------------
 	}
