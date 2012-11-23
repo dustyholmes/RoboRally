@@ -1,13 +1,9 @@
-package models.mocks
+package models
 {
-	import interfaces.IFloor;
-	import interfaces.IProgram;
+	import interfaces.IGameController;
 	import interfaces.IRobot;
-	import interfaces.IUpgrade;
 
-	import mocks.Mock;
-
-	public class MockRobot extends Mock implements IRobot
+	public class Hole extends BaseFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -21,8 +17,9 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function MockRobot()
+		public function Hole(controller:IGameController)
 		{
+			super(controller);
 		}
 
 		//--------------------------------------------------------------------------
@@ -37,56 +34,14 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function get direction():String
+		override public function set occupant(value:IRobot):void
 		{
-			return "";
-		}
+			if (value == occupant)
+				return;
 
-		public function get name():String
-		{
-			return "";
-		}
+			super.occupant = value;
 
-		public function get damage():int
-		{
-			return 0;
-		}
-
-		public function get lives():int
-		{
-			return 0;
-		}
-
-		public function get isPoweredDown():Boolean
-		{
-			return false;
-		}
-
-		public function set isPoweredDown(value:Boolean):void
-		{
-		}
-
-		public function get upgrades():Vector.<IUpgrade>
-		{
-			return null;
-		}
-
-		public function get archiveLocation():IFloor
-		{
-			return null;
-		}
-
-		public function set archiveLocation(value:IFloor):void
-		{
-		}
-
-		public function get program():Vector.<IProgram>
-		{
-			return null;
-		}
-
-		public function set program(value:Vector.<IProgram>):void
-		{
+			occupant.takeDamage(Robot.LETHAL_DAMAGE);
 		}
 
 		//--------------------------------------------------------------------------
@@ -94,23 +49,6 @@ package models.mocks
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function rotate(direction:String):void
-		{
-		}
-
-		public function takeDamage(amount:int):void
-		{
-			this.appendSpyResult("takeDamage", [amount]);
-		}
-
-		public function addUpgrade(upgrade:IUpgrade):void
-		{
-		}
-
-		public function removeUpgrade(upgrade:IUpgrade):void
-		{
-		}
 
 		//--------------------------------------------------------------------------
 		//

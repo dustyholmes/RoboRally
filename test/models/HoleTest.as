@@ -1,13 +1,15 @@
-package models.mocks
+package models
 {
+	import controller.mocks.MockGameController;
+
 	import interfaces.IFloor;
-	import interfaces.IProgram;
 	import interfaces.IRobot;
-	import interfaces.IUpgrade;
 
-	import mocks.Mock;
+	import models.mocks.MockRobot;
 
-	public class MockRobot extends Mock implements IRobot
+	import org.flexunit.asserts.assertEquals;
+
+	public class HoleTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -21,7 +23,7 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function MockRobot()
+		public function HoleTest()
 		{
 		}
 
@@ -31,86 +33,19 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
+		protected var gameController:MockGameController;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
 
-		public function get direction():String
-		{
-			return "";
-		}
-
-		public function get name():String
-		{
-			return "";
-		}
-
-		public function get damage():int
-		{
-			return 0;
-		}
-
-		public function get lives():int
-		{
-			return 0;
-		}
-
-		public function get isPoweredDown():Boolean
-		{
-			return false;
-		}
-
-		public function set isPoweredDown(value:Boolean):void
-		{
-		}
-
-		public function get upgrades():Vector.<IUpgrade>
-		{
-			return null;
-		}
-
-		public function get archiveLocation():IFloor
-		{
-			return null;
-		}
-
-		public function set archiveLocation(value:IFloor):void
-		{
-		}
-
-		public function get program():Vector.<IProgram>
-		{
-			return null;
-		}
-
-		public function set program(value:Vector.<IProgram>):void
-		{
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function rotate(direction:String):void
-		{
-		}
-
-		public function takeDamage(amount:int):void
-		{
-			this.appendSpyResult("takeDamage", [amount]);
-		}
-
-		public function addUpgrade(upgrade:IUpgrade):void
-		{
-		}
-
-		public function removeUpgrade(upgrade:IUpgrade):void
-		{
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -123,5 +58,30 @@ package models.mocks
 		//  Private Methods
 		//
 		//--------------------------------------------------------------------------
+		[Before]
+		public function setUp():void
+		{
+			gameController = new MockGameController();
+		}
+
+		[After]
+		public function tearDown():void
+		{
+			gameController = null;
+		}
+
+		[Test]
+		public function testOccupant():void
+		{
+			//When an occupant enters a hole, it should take a lethal amount of damage.
+			var hole:IFloor = new Hole(gameController);
+			var robot:MockRobot = new MockRobot();
+
+			hole.occupant = robot;
+
+			assertEquals(1, robot.received("takeDamage").count);
+			assertEquals(1, robot.received("takeDamage").args.length);
+			assertEquals(Robot.LETHAL_DAMAGE, robot.received("takeDamage").args[0]);
+		}
 	}
 }

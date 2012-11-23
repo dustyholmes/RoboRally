@@ -21,7 +21,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected  static const MAX_DAMAGE:int = 10;
+		public static const LETHAL_DAMAGE:int = 10;
 
 		//--------------------------------------------------------------------------
 		//
@@ -175,7 +175,7 @@ package models
 		{
 			this._damage += amount;
 
-			if (damage >= MAX_DAMAGE)
+			if (damage >= LETHAL_DAMAGE)
 			{
 				this._lives--;
 				this._damage = 2;
