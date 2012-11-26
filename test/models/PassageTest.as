@@ -80,8 +80,25 @@ package models
 
 			assertNull(passage.to);
 
-			floorA = null;
-			floorB = null;
+			floorA = floorB = null;
+			passage = null;
+		}
+
+
+		[Test]
+		public function testGetPartner():void
+		{
+			var floorA:IFloor = new MockFloor();
+			var floorB:IFloor = new MockFloor();
+			var floorC:IFloor = new MockFloor();
+
+			var passage:IPassage = new Passage(floorA, floorB, true, Direction.UP);
+
+			assertEquals(floorB, passage.getPartner(floorA));
+			assertEquals(floorA, passage.getPartner(floorB));
+			assertNull(passage.getPartner(floorC));
+
+			floorA = floorB = floorC = null;
 			passage = null;
 		}
 

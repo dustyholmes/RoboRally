@@ -17,5 +17,7 @@
 		<s:State id="holeState" name="hole"/>
 	</s:states>
 
-	<s:BitmapImage source="{Assets.FLOOR_BASE}" top="0" bottom="0" right="0" left="0" />
+	<s:BitmapImage top="0" bottom="0" right="0" left="0"
+				   source="{Assets.FLOOR_BASE}"
+				   source.gear="{Assets.FLOOR_GEAR}"/>
 </s:Group>

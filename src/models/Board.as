@@ -40,6 +40,22 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
+		public function get topLeftFloor():IFloor
+		{
+			for (var floor:* in floorMap)
+			{
+				var entry:MapEntry = floorMap[floor] as MapEntry;
+
+				if (!entry)
+					continue;
+
+				if (!entry.up.getPartner(floor) && !entry.left.getPartner(floor))
+					return floor;
+			}
+
+			return null;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
@@ -82,6 +98,11 @@ package models
 			this.floorMap[floor] = new MapEntry(up, down, left, right);
 		}
 
+		public function getMapEntry(floor:IFloor):MapEntry
+		{
+			return floorMap[floor];
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods
@@ -112,23 +133,5 @@ package models
 		//  Overrides
 		//
 		//--------------------------------------------------------------------------
-	}
-}
-
-import interfaces.IPassage;
-
-class MapEntry
-{
-	public var down:IPassage;
-	public var left:IPassage;
-	public var right:IPassage;
-	public var up:IPassage;
-
-	public function MapEntry(up:IPassage, down:IPassage, left:IPassage, right:IPassage)
-	{
-		this.up = up;
-		this.down = down;
-		this.left = left;
-		this.right = right;
 	}
 }

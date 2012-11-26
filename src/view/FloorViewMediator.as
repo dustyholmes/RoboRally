@@ -8,6 +8,8 @@ package view
 	import models.Gear;
 	import models.Pusher;
 
+	import org.as3commons.reflect.Type;
+
 	import view.components.FloorView;
 
 	public class FloorViewMediator
@@ -70,7 +72,8 @@ package view
 
 		protected function updateViewState():void
 		{
-			switch (typeof floor)
+			var clazz:Class = Type.forInstance(floor).clazz;
+			switch (clazz)
 			{
 				case BaseFloor:
 					floorView.currentState = floorView.normalState.name;

@@ -1,11 +1,8 @@
 package models
 {
-	import interfaces.IFloor;
 	import interfaces.IPassage;
 
-	import utils.DirectionUtil;
-
-	public class Passage implements IPassage
+	public class MapEntry
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -19,18 +16,12 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function Passage(from:IFloor, to:IFloor, hasWall:Boolean = false, laserDirection:String = null)
+		public function MapEntry(up:IPassage, down:IPassage, left:IPassage, right:IPassage)
 		{
-			this._from = from;
-			this._hasWall = hasWall;
-
-			//to and from cannot be the same.
-			if (from != to)
-				this._to = to;
-
-			//A laser direction is only valid if there is a wall.
-			if (hasWall && DirectionUtil.isValid(laserDirection))
-				this._laserDirection = laserDirection;
+			this._up = up;
+			this._down = down;
+			this._left = left;
+			this._right = right;
 		}
 
 		//--------------------------------------------------------------------------
@@ -46,61 +37,50 @@ package models
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  program
+		//  up
 		//----------------------------------
-		private var _from:IFloor;
+		private var _up:IPassage;
 
-		public function get from():IFloor
+		public function get up():IPassage
 		{
-			return _from;
+			return _up;
 		}
 
 		//----------------------------------
-		//  to
+		//  down
 		//----------------------------------
-		private var _to:IFloor;
+		private var _down:IPassage;
 
-		public function get to():IFloor
+		public function get down():IPassage
 		{
-			return _to;
+			return _down;
 		}
 
 		//----------------------------------
-		//  hasWall
+		//  left
 		//----------------------------------
-		private var _hasWall:Boolean;
+		private var _left:IPassage;
 
-		public function get hasWall():Boolean
+		public function get left():IPassage
 		{
-			return _hasWall;
+			return _left;
 		}
 
 		//----------------------------------
-		//  laserDirection
+		//  right
 		//----------------------------------
-		private var _laserDirection:String;
+		private var _right:IPassage;
 
-		public function get laserDirection():String
+		public function get right():IPassage
 		{
-			return _laserDirection;
+			return _right;
 		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function getPartner(floor:IFloor):IFloor
-		{
-			if (floor == to)
-				return from;
-
-			if (floor == from)
-				return to;
-
-			return null;
-		}
 
 		//--------------------------------------------------------------------------
 		//

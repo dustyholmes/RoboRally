@@ -9,5 +9,7 @@ package interfaces
 		function get hasWall():Boolean;
 
 		function get laserDirection():String;
+
+		function getPartner(floor:IFloor):IFloor;
 	}
 }
