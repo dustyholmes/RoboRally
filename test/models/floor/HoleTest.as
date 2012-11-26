@@ -1,18 +1,15 @@
-package models
+package models.floor
 {
-	import constants.Direction;
-
 	import controller.mocks.MockGameController;
 
-	import events.ControllerEvent;
+	import interfaces.IFloor;
 
-	import interfaces.IRobot;
-
+	import models.*;
 	import models.mocks.MockRobot;
 
 	import org.flexunit.asserts.assertEquals;
 
-	public class GearTest
+	public class HoleTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -26,7 +23,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function GearTest()
+		public function HoleTest()
 		{
 		}
 
@@ -37,7 +34,6 @@ package models
 		//--------------------------------------------------------------------------
 
 		protected var gameController:MockGameController;
-		protected var gear:Gear;
 
 		//--------------------------------------------------------------------------
 		//
@@ -51,6 +47,17 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
+		//--------------------------------------------------------------------------
+		//
+		//  Protected Methods
+		//
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private Methods
+		//
+		//--------------------------------------------------------------------------
 		[Before]
 		public function setUp():void
 		{
@@ -63,31 +70,18 @@ package models
 			gameController = null;
 		}
 
-
 		[Test]
-		public function testRotateOccupant():void
+		public function testOccupant():void
 		{
-			gear = new Gear(gameController, Direction.LEFT);
-			var robot:IRobot = new MockRobot();
-			gear.occupant = robot;
-			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.ROTATE));
+			//When an occupant enters a hole, it should take a lethal amount of damage.
+			var hole:IFloor = new Hole(gameController);
+			var robot:MockRobot = new MockRobot();
 
-			assertEquals(1, gameController.received("rotateRobot").count);
-			assertEquals(2, gameController.received("rotateRobot").args.length);
-			assertEquals(robot, gameController.received("rotateRobot").args[0]);
-			assertEquals(Direction.LEFT, gameController.received("rotateRobot").args[1]);
+			hole.occupant = robot;
+
+			assertEquals(1, robot.received("takeDamage").count);
+			assertEquals(1, robot.received("takeDamage").args.length);
+			assertEquals(Robot.LETHAL_DAMAGE, robot.received("takeDamage").args[0]);
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Protected Methods
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
 	}
 }

@@ -1,15 +1,10 @@
-package models
+package models.floor
 {
-	import constants.Direction;
-
-	import events.ControllerEvent;
+	import controller.mocks.MockGameController;
 
 	import interfaces.IGameController;
-	import interfaces.IRobot;
 
-	import utils.DirectionUtil;
-
-	public class Conveyor extends BaseFloor
+	public class UpgradeFloorTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -23,22 +18,8 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function Conveyor(controller:IGameController, direction:String, rotation:String = null)
+		public function UpgradeFloorTest()
 		{
-			super(controller);
-
-			if (DirectionUtil.isValid(direction))
-				this.direction = direction;
-			else
-				this.direction = Direction.UP;
-
-			if (DirectionUtil.isValidRotation(rotation))
-				this.rotation = rotation;
-			else
-				this.rotation = null;
-
-
-			controller.addEventListener(ControllerEvent.CONVEY, conveyEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -46,9 +27,8 @@ package models
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
-		protected var direction:String;
-		protected var rotation:String;
+		private var boardElement:UpgradeFloor;
+		private var controller:IGameController;
 
 		//--------------------------------------------------------------------------
 		//
@@ -56,22 +36,27 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		override public function set occupant(value:IRobot):void
-		{
-			if (value == occupant)
-				return;
-
-			super.occupant = value;
-
-			if (occupant && rotation)
-				controller.rotateRobot(occupant, rotation);
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
+
+		[Before]
+		public function setUp():void
+		{
+			controller = new MockGameController();
+			boardElement = new UpgradeFloor(controller);
+		}
+
+		[After]
+		public function tearDown():void
+		{
+			controller = null;
+			boardElement = null;
+		}
+
+		//An upgrade should respond to a repair phase event from the controller
 
 		//--------------------------------------------------------------------------
 		//
@@ -79,28 +64,9 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected function conveyOccupant():void
-		{
-			if (!occupant)
-				return;
-
-			controller.moveRobot(occupant, direction, this);
-		}
-
-		protected function conveyEventHandler(event:ControllerEvent):void
-		{
-			conveyOccupant();
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  Overrides
 		//
 		//--------------------------------------------------------------------------
 	}

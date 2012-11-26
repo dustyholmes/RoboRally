@@ -1,9 +1,9 @@
-package models
+package models.floor.mocks
 {
-	import interfaces.IGameController;
+	import interfaces.IFloor;
 	import interfaces.IRobot;
 
-	public class Hole extends BaseFloor
+	public class MockFloor implements IFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -17,9 +17,8 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function Hole(controller:IGameController)
+		public function MockFloor()
 		{
-			super(controller);
 		}
 
 		//--------------------------------------------------------------------------
@@ -34,14 +33,19 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		override public function set occupant(value:IRobot):void
+		//----------------------------------
+		//  occupant
+		//----------------------------------
+		private var _occupant:IRobot;
+
+		public function get occupant():IRobot
 		{
-			if (value == occupant)
-				return;
+			return _occupant;
+		}
 
-			super.occupant = value;
-
-			occupant.takeDamage(Robot.LETHAL_DAMAGE);
+		public function set occupant(value:IRobot):void
+		{
+			_occupant = value;
 		}
 
 		//--------------------------------------------------------------------------

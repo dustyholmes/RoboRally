@@ -13,10 +13,10 @@
 		import interfaces.IGameController;
 		import interfaces.IPassage;
 
-		import models.BaseFloor;
+		import models.floor.BaseFloor;
 		import models.Board;
-		import models.Conveyor;
-		import models.Gear;
+		import models.floor.Conveyor;
+		import models.floor.Gear;
 		import models.Passage;
 
 		import view.BoardViewMediator;

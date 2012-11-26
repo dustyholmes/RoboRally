@@ -1,14 +1,10 @@
-package models
+package models.floor
 {
-	import constants.Direction;
-
-	import events.ControllerEvent;
+	import controller.mocks.MockGameController;
 
 	import interfaces.IGameController;
 
-	import utils.DirectionUtil;
-
-	public class Pusher extends BaseFloor
+	public class RepairFloorTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -22,18 +18,8 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function Pusher(controller:IGameController, direction:String, phases:Vector.<int>)
+		public function RepairFloorTest()
 		{
-			super(controller);
-
-			this.registers = phases;
-
-			if (DirectionUtil.isValid(direction))
-				this.direction = direction;
-			else
-				this.direction = Direction.UP;
-
-			controller.addEventListener(ControllerEvent.PUSH, pushEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -41,9 +27,8 @@ package models
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
-		protected var direction:String;
-		protected var registers:Vector.<int>;
+		private var boardElement:RepairFloor;
+		private var controller:IGameController;
 
 		//--------------------------------------------------------------------------
 		//
@@ -57,39 +42,31 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
+		[Before]
+		public function setUp():void
+		{
+			controller = new MockGameController();
+			boardElement = new RepairFloor(controller);
+		}
+
+		[After]
+		public function tearDown():void
+		{
+			controller = null;
+			boardElement = null;
+		}
+
+		//A repair should respond to a repair phase event from the controller
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods
 		//
 		//--------------------------------------------------------------------------
 
-		protected  function isActive():Boolean
-		{
-			return this.registers.indexOf(controller.register) >= 0;
-		}
-
-		protected function pushOccupant():void
-		{
-			if (!occupant || !isActive())
-				return;
-
-			controller.moveRobot(occupant, direction, this);
-		}
-
-		protected function pushEventHandler(event:ControllerEvent):void
-		{
-			pushOccupant();
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  Overrides
 		//
 		//--------------------------------------------------------------------------
 	}

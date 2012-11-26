@@ -1,9 +1,10 @@
-package models.mocks
+package models.floor
 {
-	import interfaces.IFloor;
-	import interfaces.IRobot;
+	import events.ControllerEvent;
 
-	public class MockFloor implements IFloor
+	import interfaces.IGameController;
+
+	public class ExpressConveyor extends Conveyor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -17,8 +18,11 @@ package models.mocks
 		//
 		//--------------------------------------------------------------------------
 
-		public function MockFloor()
+		public function ExpressConveyor(controller:IGameController, direction:String, rotation:String = null)
 		{
+			super(controller, direction, rotation);
+
+			controller.addEventListener(ControllerEvent.EXPRESS_CONVEY, conveyEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -32,21 +36,6 @@ package models.mocks
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  occupant
-		//----------------------------------
-		private var _occupant:IRobot;
-
-		public function get occupant():IRobot
-		{
-			return _occupant;
-		}
-
-		public function set occupant(value:IRobot):void
-		{
-			_occupant = value;
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -63,6 +52,12 @@ package models.mocks
 		//--------------------------------------------------------------------------
 		//
 		//  Private Methods
+		//
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overrides
 		//
 		//--------------------------------------------------------------------------
 	}

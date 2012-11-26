@@ -1,16 +1,20 @@
-package models
+package models.floor
 {
 	import constants.Direction;
 
-	import interfaces.IFloor;
-	import interfaces.IPassage;
+	import controller.mocks.MockGameController;
 
-	import models.floor.mocks.MockFloor;
+	import events.ControllerEvent;
+
+	import interfaces.IRobot;
+
+	import models.floor.Pusher;
+
+	import models.mocks.MockRobot;
 
 	import org.flexunit.asserts.assertEquals;
-	import org.flexunit.asserts.assertNull;
 
-	public class PassageTest
+	public class PusherTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -24,7 +28,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function PassageTest()
+		public function PusherTest()
 		{
 		}
 
@@ -33,6 +37,9 @@ package models
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
+
+		protected  var gameController:MockGameController;
+		protected  var pusher:Pusher;
 
 		//--------------------------------------------------------------------------
 		//
@@ -45,61 +52,46 @@ package models
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
+
 		[Before]
 		public function setUp():void
 		{
-
+			gameController = new MockGameController();
 		}
 
 		[After]
 		public function tearDown():void
 		{
-
+			gameController = null;
 		}
 
 
 		[Test]
-		public function testConstructor():void
+		public function testPushOccupant():void
 		{
-			var floorA:IFloor = new MockFloor();
-			var floorB:IFloor = new MockFloor();
+			//Test when the phase is right for the pusher
+			var registers:Vector.<int> = new Vector.<int>();
+			registers.push(1);
+			pusher = new Pusher(gameController, Direction.UP, registers);
+			var robot:IRobot = new MockRobot();
+			pusher.occupant = robot;
+			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
 
-			var passage:IPassage = new Passage(floorA, floorB, true, Direction.UP);
+			assertEquals(1, gameController.received("moveRobot").count);
+			assertEquals(3, gameController.received("moveRobot").args.length);
+			assertEquals(robot, gameController..received("moveRobot").args[0]);
+			assertEquals(Direction.UP, gameController.received("moveRobot").args[1]);
+			assertEquals(pusher, gameController.received("moveRobot").args[2]);
 
-			assertEquals(floorA, passage.from);
-			assertEquals(floorB, passage.to);
-			assertEquals(true, passage.hasWall);
-			assertEquals(Direction.UP, passage.laserDirection);
+			pusher.occupant = null;
 
-			//Lasers require a wall
-			passage = new Passage(floorA, floorB, false, Direction.UP);
+			//Test when the phase is wrong for the pusher
+			gameController.register = 2;
+			pusher = new Pusher(gameController, Direction.UP, registers);
+			pusher.occupant = robot;
+			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
 
-			assertNull(passage.laserDirection);
-
-			passage = new Passage(floorA, floorA);
-
-			assertNull(passage.to);
-
-			floorA = floorB = null;
-			passage = null;
-		}
-
-
-		[Test]
-		public function testGetPartner():void
-		{
-			var floorA:IFloor = new MockFloor();
-			var floorB:IFloor = new MockFloor();
-			var floorC:IFloor = new MockFloor();
-
-			var passage:IPassage = new Passage(floorA, floorB, true, Direction.UP);
-
-			assertEquals(floorB, passage.getPartner(floorA));
-			assertEquals(floorA, passage.getPartner(floorB));
-			assertNull(passage.getPartner(floorC));
-
-			floorA = floorB = floorC = null;
-			passage = null;
+			assertEquals(1, gameController.received("moveRobot").count);
 		}
 
 		//--------------------------------------------------------------------------
@@ -113,6 +105,5 @@ package models
 		//  Private Methods
 		//
 		//--------------------------------------------------------------------------
-
 	}
 }

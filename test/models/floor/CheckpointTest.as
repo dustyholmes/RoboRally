@@ -1,16 +1,10 @@
-package models
+package models.floor
 {
 	import controller.mocks.MockGameController;
 
 	import interfaces.IGameController;
-	import interfaces.IRobot;
 
-	import models.mocks.MockRobot;
-
-	import org.flexunit.asserts.assertEquals;
-	import org.flexunit.asserts.assertNull;
-
-	public class BaseFloorTest
+	public class CheckpointTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -24,7 +18,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function BaseFloorTest()
+		public function CheckpointTest()
 		{
 		}
 
@@ -33,8 +27,7 @@ package models
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
-		private var boardElement:BaseFloor;
+		private var boardElement:Checkpoint;
 		private var controller:IGameController;
 
 		//--------------------------------------------------------------------------
@@ -53,7 +46,7 @@ package models
 		public function setUp():void
 		{
 			controller = new MockGameController();
-			boardElement = new BaseFloor(controller);
+			boardElement = new Checkpoint(controller);
 		}
 
 		[After]
@@ -66,13 +59,7 @@ package models
 		[Test]
 		public function testOccupant():void
 		{
-			var robot:IRobot = new MockRobot();
-
-			assertNull(boardElement.occupant);
-
-			boardElement.occupant = robot;
-
-			assertEquals(robot, boardElement.occupant);
+			//When a robot enters this space, its archive should update
 		}
 
 		//--------------------------------------------------------------------------

@@ -1,13 +1,10 @@
-package view
+package models.floor
 {
-	import interfaces.IBoard;
-	import interfaces.IFloor;
+	import models.*;
+	import interfaces.IGameController;
+	import interfaces.IRobot;
 
-	import models.floor.BaseFloor;
-
-	import view.components.BoardView;
-
-	public class BoardViewMediator
+	public class Hole extends BaseFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -21,13 +18,9 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		public function BoardViewMediator(board:IBoard)
+		public function Hole(controller:IGameController)
 		{
-			this.board = board;
-
-			this._boardView = new BoardView();
-
-			createChildren();
+			super(controller);
 		}
 
 		//--------------------------------------------------------------------------
@@ -36,23 +29,22 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		protected var board:IBoard;
-
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
 
-		//----------------------------------
-		//  boardView
-		//----------------------------------
-		private var _boardView:BoardView;
-
-		public function get boardView():BoardView
+		override public function set occupant(value:IRobot):void
 		{
-			return _boardView;
+			if (value == occupant)
+				return;
+
+			super.occupant = value;
+
+			occupant.takeDamage(Robot.LETHAL_DAMAGE);
 		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
@@ -64,38 +56,6 @@ package view
 		//  Protected Methods
 		//
 		//--------------------------------------------------------------------------
-
-		protected function createChildren():void
-		{
-			var firstFloor:IFloor = this.board.topLeftFloor;
-			var currentFloor:IFloor = firstFloor;
-
-			var floorViewMediator:FloorViewMediator;
-
-			while (firstFloor)
-			{
-				while (currentFloor)
-				{
-					floorViewMediator = new FloorViewMediator(currentFloor);
-					boardView.addElement(floorViewMediator.floorView);
-
-					currentFloor = board.getMapEntry(currentFloor).right.getPartner(currentFloor);
-				}
-
-				firstFloor = currentFloor = board.getMapEntry(firstFloor).down.getPartner(firstFloor);
-			}
-
-//			this.boardView.width = 600;
-//			this.boardView.height = 600;
-//
-//
-//
-//			for (var i:int = 0; i < 144; i++)
-//			{
-//				floorViewMediator = new FloorViewMediator(new BaseFloor(null));
-//				boardView.addElement(floorViewMediator.floorView);
-//			}
-		}
 
 		//--------------------------------------------------------------------------
 		//

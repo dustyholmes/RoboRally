@@ -1,13 +1,15 @@
-package view
+package models.floor
 {
-	import interfaces.IBoard;
-	import interfaces.IFloor;
+	import constants.Direction;
 
-	import models.floor.BaseFloor;
+	import events.ControllerEvent;
 
-	import view.components.BoardView;
+	import interfaces.IGameController;
+	import interfaces.IRobot;
 
-	public class BoardViewMediator
+	import utils.DirectionUtil;
+
+	public class Conveyor extends BaseFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -21,13 +23,22 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		public function BoardViewMediator(board:IBoard)
+		public function Conveyor(controller:IGameController, direction:String, rotation:String = null)
 		{
-			this.board = board;
+			super(controller);
 
-			this._boardView = new BoardView();
+			if (DirectionUtil.isValid(direction))
+				this.direction = direction;
+			else
+				this.direction = Direction.UP;
 
-			createChildren();
+			if (DirectionUtil.isValidRotation(rotation))
+				this.rotation = rotation;
+			else
+				this.rotation = null;
+
+
+			controller.addEventListener(ControllerEvent.CONVEY, conveyEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -36,7 +47,8 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		protected var board:IBoard;
+		protected var direction:String;
+		protected var rotation:String;
 
 		//--------------------------------------------------------------------------
 		//
@@ -44,15 +56,17 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		//----------------------------------
-		//  boardView
-		//----------------------------------
-		private var _boardView:BoardView;
-
-		public function get boardView():BoardView
+		override public function set occupant(value:IRobot):void
 		{
-			return _boardView;
+			if (value == occupant)
+				return;
+
+			super.occupant = value;
+
+			if (occupant && rotation)
+				controller.rotateRobot(occupant, rotation);
 		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
@@ -65,41 +79,28 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		protected function createChildren():void
+		protected function conveyOccupant():void
 		{
-			var firstFloor:IFloor = this.board.topLeftFloor;
-			var currentFloor:IFloor = firstFloor;
+			if (!occupant)
+				return;
 
-			var floorViewMediator:FloorViewMediator;
+			controller.moveRobot(occupant, direction, this);
+		}
 
-			while (firstFloor)
-			{
-				while (currentFloor)
-				{
-					floorViewMediator = new FloorViewMediator(currentFloor);
-					boardView.addElement(floorViewMediator.floorView);
-
-					currentFloor = board.getMapEntry(currentFloor).right.getPartner(currentFloor);
-				}
-
-				firstFloor = currentFloor = board.getMapEntry(firstFloor).down.getPartner(firstFloor);
-			}
-
-//			this.boardView.width = 600;
-//			this.boardView.height = 600;
-//
-//
-//
-//			for (var i:int = 0; i < 144; i++)
-//			{
-//				floorViewMediator = new FloorViewMediator(new BaseFloor(null));
-//				boardView.addElement(floorViewMediator.floorView);
-//			}
+		protected function conveyEventHandler(event:ControllerEvent):void
+		{
+			conveyOccupant();
 		}
 
 		//--------------------------------------------------------------------------
 		//
 		//  Private Methods
+		//
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overrides
 		//
 		//--------------------------------------------------------------------------
 	}

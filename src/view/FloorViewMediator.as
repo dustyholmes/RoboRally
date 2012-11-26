@@ -2,11 +2,14 @@ package view
 {
 	import interfaces.IFloor;
 
-	import models.BaseFloor;
-	import models.Conveyor;
-	import models.ExpressConveyor;
-	import models.Gear;
-	import models.Pusher;
+	import models.floor.BaseFloor;
+	import models.floor.Checkpoint;
+	import models.floor.Conveyor;
+	import models.floor.ExpressConveyor;
+	import models.floor.Gear;
+	import models.floor.Pusher;
+	import models.floor.RepairFloor;
+	import models.floor.UpgradeFloor;
 
 	import org.as3commons.reflect.Type;
 
@@ -89,6 +92,15 @@ package view
 					break;
 				case Pusher:
 					floorView.currentState = floorView.pusherState.name;
+					break;
+				case Checkpoint:
+					floorView.currentState = floorView.checkpointState.name;
+					break;
+				case RepairFloor:
+					floorView.currentState = floorView.repairState.name;
+					break;
+				case UpgradeFloor:
+					floorView.currentState = floorView.upgradeState.name;
 					break;
 			}
 		}

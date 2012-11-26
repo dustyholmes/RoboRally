@@ -1,4 +1,4 @@
-package models
+package models.floor
 {
 	import constants.Direction;
 
@@ -8,11 +8,13 @@ package models
 
 	import interfaces.IRobot;
 
+	import models.floor.Gear;
+
 	import models.mocks.MockRobot;
 
 	import org.flexunit.asserts.assertEquals;
 
-	public class PusherTest
+	public class GearTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -26,7 +28,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function PusherTest()
+		public function GearTest()
 		{
 		}
 
@@ -36,8 +38,8 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected  var gameController:MockGameController;
-		protected  var pusher:Pusher;
+		protected var gameController:MockGameController;
+		protected var gear:Gear;
 
 		//--------------------------------------------------------------------------
 		//
@@ -65,31 +67,17 @@ package models
 
 
 		[Test]
-		public function testPushOccupant():void
+		public function testRotateOccupant():void
 		{
-			//Test when the phase is right for the pusher
-			var registers:Vector.<int> = new Vector.<int>();
-			registers.push(1);
-			pusher = new Pusher(gameController, Direction.UP, registers);
+			gear = new Gear(gameController, Direction.LEFT);
 			var robot:IRobot = new MockRobot();
-			pusher.occupant = robot;
-			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
+			gear.occupant = robot;
+			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.ROTATE));
 
-			assertEquals(1, gameController.received("moveRobot").count);
-			assertEquals(3, gameController.received("moveRobot").args.length);
-			assertEquals(robot, gameController..received("moveRobot").args[0]);
-			assertEquals(Direction.UP, gameController.received("moveRobot").args[1]);
-			assertEquals(pusher, gameController.received("moveRobot").args[2]);
-
-			pusher.occupant = null;
-
-			//Test when the phase is wrong for the pusher
-			gameController.register = 2;
-			pusher = new Pusher(gameController, Direction.UP, registers);
-			pusher.occupant = robot;
-			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.PUSH));
-
-			assertEquals(1, gameController.received("moveRobot").count);
+			assertEquals(1, gameController.received("rotateRobot").count);
+			assertEquals(2, gameController.received("rotateRobot").args.length);
+			assertEquals(robot, gameController.received("rotateRobot").args[0]);
+			assertEquals(Direction.LEFT, gameController.received("rotateRobot").args[1]);
 		}
 
 		//--------------------------------------------------------------------------

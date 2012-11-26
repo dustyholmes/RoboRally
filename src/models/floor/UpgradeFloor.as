@@ -1,10 +1,8 @@
-package models
+package models.floor
 {
-	import events.ControllerEvent;
-
 	import interfaces.IGameController;
 
-	public class ExpressConveyor extends Conveyor
+	public class UpgradeFloor extends RepairFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -18,11 +16,9 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function ExpressConveyor(controller:IGameController, direction:String, rotation:String = null)
+		public function UpgradeFloor(controller:IGameController)
 		{
-			super(controller, direction, rotation);
-
-			controller.addEventListener(ControllerEvent.EXPRESS_CONVEY, conveyEventHandler, false, 0, true);
+			super(controller);
 		}
 
 		//--------------------------------------------------------------------------
@@ -52,12 +48,6 @@ package models
 		//--------------------------------------------------------------------------
 		//
 		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  Overrides
 		//
 		//--------------------------------------------------------------------------
 	}

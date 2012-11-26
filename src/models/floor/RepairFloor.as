@@ -1,14 +1,8 @@
-package models
+package models.floor
 {
-	import constants.Direction;
-
-	import events.ControllerEvent;
-
 	import interfaces.IGameController;
 
-	import utils.DirectionUtil;
-
-	public class Gear extends BaseFloor
+	public class RepairFloor extends BaseFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -22,16 +16,9 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function Gear(controller:IGameController, direction:String)
+		public function RepairFloor(controller:IGameController)
 		{
 			super(controller);
-
-			if (DirectionUtil.isValidRotation(direction))
-				this.direction = direction;
-			else
-				this.direction = Direction.LEFT;
-
-			controller.addEventListener(ControllerEvent.ROTATE, rotateEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -39,8 +26,6 @@ package models
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
-		protected var direction:String;
 
 		//--------------------------------------------------------------------------
 		//
@@ -60,28 +45,9 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected function rotateOccupant():void
-		{
-			if (!occupant)
-				return;
-
-			controller.rotateRobot(occupant, direction);
-		}
-
-		protected function rotateEventHandler(event:ControllerEvent):void
-		{
-			rotateOccupant();
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  Overrides
 		//
 		//--------------------------------------------------------------------------
 	}

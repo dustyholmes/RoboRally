@@ -15,6 +15,9 @@
 		<s:State id="expressState" name="express"/>
 		<s:State id="gearState" name="gear"/>
 		<s:State id="holeState" name="hole"/>
+		<s:State id="checkpointState" name="checkpoint"/>
+		<s:State id="repairState" name="repair"/>
+		<s:State id="upgradeState" name="upgrade"/>
 	</s:states>
 
 	<s:BitmapImage top="0" bottom="0" right="0" left="0"

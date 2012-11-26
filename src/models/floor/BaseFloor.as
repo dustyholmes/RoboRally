@@ -1,15 +1,10 @@
-package models
+package models.floor
 {
-	import controller.mocks.MockGameController;
-
 	import interfaces.IFloor;
+	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	import models.mocks.MockRobot;
-
-	import org.flexunit.asserts.assertEquals;
-
-	public class HoleTest
+	public class BaseFloor implements IFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -23,8 +18,9 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function HoleTest()
+		public function BaseFloor(controller:IGameController)
 		{
+			this.controller = controller;
 		}
 
 		//--------------------------------------------------------------------------
@@ -33,13 +29,31 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected var gameController:MockGameController;
+		protected var controller:IGameController;
 
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  occupant
+		//----------------------------------
+		private var _occupant:IRobot;
+
+		public function get occupant():IRobot
+		{
+			return _occupant;
+		}
+
+		public function set occupant(value:IRobot):void
+		{
+			if (value == _occupant)
+				return;
+
+			_occupant = value;
+		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -58,30 +72,11 @@ package models
 		//  Private Methods
 		//
 		//--------------------------------------------------------------------------
-		[Before]
-		public function setUp():void
-		{
-			gameController = new MockGameController();
-		}
 
-		[After]
-		public function tearDown():void
-		{
-			gameController = null;
-		}
-
-		[Test]
-		public function testOccupant():void
-		{
-			//When an occupant enters a hole, it should take a lethal amount of damage.
-			var hole:IFloor = new Hole(gameController);
-			var robot:MockRobot = new MockRobot();
-
-			hole.occupant = robot;
-
-			assertEquals(1, robot.received("takeDamage").count);
-			assertEquals(1, robot.received("takeDamage").args.length);
-			assertEquals(Robot.LETHAL_DAMAGE, robot.received("takeDamage").args[0]);
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Overrides
+		//
+		//--------------------------------------------------------------------------
 	}
 }

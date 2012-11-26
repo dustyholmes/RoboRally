@@ -1,13 +1,14 @@
-package view
+package models.floor
 {
-	import interfaces.IBoard;
-	import interfaces.IFloor;
+	import constants.Direction;
 
-	import models.floor.BaseFloor;
+	import events.ControllerEvent;
 
-	import view.components.BoardView;
+	import interfaces.IGameController;
 
-	public class BoardViewMediator
+	import utils.DirectionUtil;
+
+	public class Pusher extends BaseFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -21,13 +22,18 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		public function BoardViewMediator(board:IBoard)
+		public function Pusher(controller:IGameController, direction:String, phases:Vector.<int>)
 		{
-			this.board = board;
+			super(controller);
 
-			this._boardView = new BoardView();
+			this.registers = phases;
 
-			createChildren();
+			if (DirectionUtil.isValid(direction))
+				this.direction = direction;
+			else
+				this.direction = Direction.UP;
+
+			controller.addEventListener(ControllerEvent.PUSH, pushEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -36,7 +42,8 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		protected var board:IBoard;
+		protected var direction:String;
+		protected var registers:Vector.<int>;
 
 		//--------------------------------------------------------------------------
 		//
@@ -44,15 +51,6 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		//----------------------------------
-		//  boardView
-		//----------------------------------
-		private var _boardView:BoardView;
-
-		public function get boardView():BoardView
-		{
-			return _boardView;
-		}
 		//--------------------------------------------------------------------------
 		//
 		//  Public Methods
@@ -65,41 +63,33 @@ package view
 		//
 		//--------------------------------------------------------------------------
 
-		protected function createChildren():void
+		protected  function isActive():Boolean
 		{
-			var firstFloor:IFloor = this.board.topLeftFloor;
-			var currentFloor:IFloor = firstFloor;
+			return this.registers.indexOf(controller.register) >= 0;
+		}
 
-			var floorViewMediator:FloorViewMediator;
+		protected function pushOccupant():void
+		{
+			if (!occupant || !isActive())
+				return;
 
-			while (firstFloor)
-			{
-				while (currentFloor)
-				{
-					floorViewMediator = new FloorViewMediator(currentFloor);
-					boardView.addElement(floorViewMediator.floorView);
+			controller.moveRobot(occupant, direction, this);
+		}
 
-					currentFloor = board.getMapEntry(currentFloor).right.getPartner(currentFloor);
-				}
-
-				firstFloor = currentFloor = board.getMapEntry(firstFloor).down.getPartner(firstFloor);
-			}
-
-//			this.boardView.width = 600;
-//			this.boardView.height = 600;
-//
-//
-//
-//			for (var i:int = 0; i < 144; i++)
-//			{
-//				floorViewMediator = new FloorViewMediator(new BaseFloor(null));
-//				boardView.addElement(floorViewMediator.floorView);
-//			}
+		protected function pushEventHandler(event:ControllerEvent):void
+		{
+			pushOccupant();
 		}
 
 		//--------------------------------------------------------------------------
 		//
 		//  Private Methods
+		//
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overrides
 		//
 		//--------------------------------------------------------------------------
 	}

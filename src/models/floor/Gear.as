@@ -1,10 +1,14 @@
-package models
+package models.floor
 {
-	import interfaces.IFloor;
-	import interfaces.IGameController;
-	import interfaces.IRobot;
+	import constants.Direction;
 
-	public class BaseFloor implements IFloor
+	import events.ControllerEvent;
+
+	import interfaces.IGameController;
+
+	import utils.DirectionUtil;
+
+	public class Gear extends BaseFloor
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -18,9 +22,16 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function BaseFloor(controller:IGameController)
+		public function Gear(controller:IGameController, direction:String)
 		{
-			this.controller = controller;
+			super(controller);
+
+			if (DirectionUtil.isValidRotation(direction))
+				this.direction = direction;
+			else
+				this.direction = Direction.LEFT;
+
+			controller.addEventListener(ControllerEvent.ROTATE, rotateEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -29,31 +40,13 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		protected var controller:IGameController;
+		protected var direction:String;
 
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  occupant
-		//----------------------------------
-		private var _occupant:IRobot;
-
-		public function get occupant():IRobot
-		{
-			return _occupant;
-		}
-
-		public function set occupant(value:IRobot):void
-		{
-			if (value == _occupant)
-				return;
-
-			_occupant = value;
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -66,6 +59,19 @@ package models
 		//  Protected Methods
 		//
 		//--------------------------------------------------------------------------
+
+		protected function rotateOccupant():void
+		{
+			if (!occupant)
+				return;
+
+			controller.rotateRobot(occupant, direction);
+		}
+
+		protected function rotateEventHandler(event:ControllerEvent):void
+		{
+			rotateOccupant();
+		}
 
 		//--------------------------------------------------------------------------
 		//

@@ -6,7 +6,7 @@ package models
 	import interfaces.IPassage;
 	import interfaces.IRobot;
 
-	import models.mocks.MockFloor;
+	import models.floor.mocks.MockFloor;
 	import models.mocks.MockRobot;
 
 	import org.flexunit.asserts.assertEquals;

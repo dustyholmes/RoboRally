@@ -1,16 +1,18 @@
-package models
+package models.floor
 {
-	import constants.Direction;
+	import controller.mocks.MockGameController;
 
-	import interfaces.IFloor;
-	import interfaces.IPassage;
+	import interfaces.IGameController;
+	import interfaces.IRobot;
 
-	import models.floor.mocks.MockFloor;
+	import models.floor.BaseFloor;
+
+	import models.mocks.MockRobot;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
 
-	public class PassageTest
+	public class BaseFloorTest
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -24,7 +26,7 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
-		public function PassageTest()
+		public function BaseFloorTest()
 		{
 		}
 
@@ -33,6 +35,9 @@ package models
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
+
+		private var boardElement:BaseFloor;
+		private var controller:IGameController;
 
 		//--------------------------------------------------------------------------
 		//
@@ -45,61 +50,31 @@ package models
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
+
 		[Before]
 		public function setUp():void
 		{
-
+			controller = new MockGameController();
+			boardElement = new BaseFloor(controller);
 		}
 
 		[After]
 		public function tearDown():void
 		{
-
+			controller = null;
+			boardElement = null;
 		}
 
-
 		[Test]
-		public function testConstructor():void
+		public function testOccupant():void
 		{
-			var floorA:IFloor = new MockFloor();
-			var floorB:IFloor = new MockFloor();
+			var robot:IRobot = new MockRobot();
 
-			var passage:IPassage = new Passage(floorA, floorB, true, Direction.UP);
+			assertNull(boardElement.occupant);
 
-			assertEquals(floorA, passage.from);
-			assertEquals(floorB, passage.to);
-			assertEquals(true, passage.hasWall);
-			assertEquals(Direction.UP, passage.laserDirection);
+			boardElement.occupant = robot;
 
-			//Lasers require a wall
-			passage = new Passage(floorA, floorB, false, Direction.UP);
-
-			assertNull(passage.laserDirection);
-
-			passage = new Passage(floorA, floorA);
-
-			assertNull(passage.to);
-
-			floorA = floorB = null;
-			passage = null;
-		}
-
-
-		[Test]
-		public function testGetPartner():void
-		{
-			var floorA:IFloor = new MockFloor();
-			var floorB:IFloor = new MockFloor();
-			var floorC:IFloor = new MockFloor();
-
-			var passage:IPassage = new Passage(floorA, floorB, true, Direction.UP);
-
-			assertEquals(floorB, passage.getPartner(floorA));
-			assertEquals(floorA, passage.getPartner(floorB));
-			assertNull(passage.getPartner(floorC));
-
-			floorA = floorB = floorC = null;
-			passage = null;
+			assertEquals(robot, boardElement.occupant);
 		}
 
 		//--------------------------------------------------------------------------
@@ -113,6 +88,5 @@ package models
 		//  Private Methods
 		//
 		//--------------------------------------------------------------------------
-
 	}
 }
