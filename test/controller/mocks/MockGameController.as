@@ -66,7 +66,12 @@ package controller.mocks
 		{
 			appendSpyResult("rotateRobot", [robot, direction]);
 		}
-		
+
+		public function checkpointReached(robot:IRobot, requiredCheckpoint:IFloor, currentLocation:IFloor):void
+		{
+			appendSpyResult("checkpointReached", [robot, requiredCheckpoint, currentLocation]);
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods

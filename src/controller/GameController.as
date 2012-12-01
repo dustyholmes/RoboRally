@@ -75,6 +75,14 @@ package controller
 			robot.rotate(direction);
 		}
 
+		public function checkpointReached(robot:IRobot, requiredCheckpoint:IFloor, currentLocation:IFloor):void
+		{
+			if (!robot || !currentLocation || robot.lastCheckpoint != requiredCheckpoint)
+				return;
+
+			robot.lastCheckpoint = currentLocation;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods

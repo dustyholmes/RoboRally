@@ -78,6 +78,17 @@ package models.mocks
 
 		public function set archiveLocation(value:IFloor):void
 		{
+			this.appendSpyResult("set archiveLocation", [value]);
+		}
+
+		public function get lastCheckpoint():IFloor
+		{
+			return null;
+		}
+
+		public function set lastCheckpoint(value:IFloor):void
+		{
+			this.appendSpyResult("set lastCheckpoint", [value]);
 		}
 
 		public function get program():Vector.<IProgram>
@@ -97,6 +108,7 @@ package models.mocks
 
 		public function rotate(direction:String):void
 		{
+			this.appendSpyResult("rotate", [direction]);
 		}
 
 		public function takeDamage(amount:int):void

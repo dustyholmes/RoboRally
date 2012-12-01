@@ -8,5 +8,6 @@ package interfaces
 
 		function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void;
 		function rotateRobot(robot:IRobot, direction:String):void;
+		function checkpointReached(robot:IRobot, requiredCheckpoint:IFloor, currentLocation:IFloor):void;
 	}
 }

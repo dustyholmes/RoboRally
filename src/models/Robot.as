@@ -134,6 +134,27 @@ package models
 
 			_archiveLocation = value;
 		}
+
+		//----------------------------------
+		//  lastCheckpoint
+		//----------------------------------
+		private var _lastCheckpoint:IFloor = null;
+
+		public function get lastCheckpoint():IFloor
+		{
+			return _lastCheckpoint;
+		}
+
+		public function set lastCheckpoint(value:IFloor):void
+		{
+			if (value == _lastCheckpoint)
+				return;
+
+			_lastCheckpoint = value;
+
+			if (_lastCheckpoint)
+				archiveLocation = _lastCheckpoint;
+		}
 		
 		//----------------------------------
 		//  program

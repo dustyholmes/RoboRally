@@ -2,14 +2,15 @@ package controller
 {
 	import constants.Direction;
 
-	import interfaces.IBoard;
-
+	import interfaces.IFloor;
 	import interfaces.IGameController;
 	import interfaces.IRobot;
 
+	import models.floor.mocks.MockFloor;
 	import models.mocks.MockBoard;
-
 	import models.mocks.MockRobot;
+
+	import org.flexunit.asserts.assertEquals;
 
 	public class GameControllerTest
 	{
@@ -36,7 +37,7 @@ package controller
 		//--------------------------------------------------------------------------
 
 		private var gameController:IGameController;
-		private var board:IBoard;
+		private var board:MockBoard;
 
 		//--------------------------------------------------------------------------
 		//
@@ -68,36 +69,63 @@ package controller
 		public function testMoveRobot():void
 		{
 			var robot:IRobot = new MockRobot();
+			var floor:IFloor = new MockFloor();
 
 			gameController.moveRobot(robot, Direction.UP);
-			//Assert that the robot has moved up.
+			assertEquals(1, board.received("moveRobot").count);
+			assertEquals(robot, board.received("moveRobot").args[0]);
+			assertEquals(Direction.UP, board.received("moveRobot").args[1]);
+			assertEquals(null, board.received("moveRobot").args[2]);
 
-			gameController.moveRobot(robot, Direction.DOWN);
-			//assert that the robot has moved down
-
-			gameController.moveRobot(robot, Direction.LEFT);
-			//assert that the robot has moved left
-
-			gameController.moveRobot(robot, Direction.RIGHT);
-			//assert that the robot has moved right
+			gameController.moveRobot(robot, Direction.DOWN, floor);
+			assertEquals(2, board.received("moveRobot").count);
+			assertEquals(robot, board.received("moveRobot").args[0]);
+			assertEquals(Direction.DOWN, board.received("moveRobot").args[1]);
+			assertEquals(floor, board.received("moveRobot").args[2]);
 
 			gameController.moveRobot(robot, "invalid");
-			//assert that the robot has not moved
+			assertEquals(2, board.received("moveRobot").count);
 		}
 
 		[Test]
 		public function testRotateRobot():void
 		{
-			var robot:IRobot = new MockRobot();
+			var robot:MockRobot = new MockRobot();
 
 			gameController.rotateRobot(robot, Direction.LEFT);
-			//assert that the robot has rotated left
+			assertEquals(1, robot.received("rotate").count);
+			assertEquals(Direction.LEFT, robot.received("rotate").args[0]);
 
 			gameController.rotateRobot(robot, Direction.RIGHT);
-			//assert that the robot has rotated right
+			assertEquals(2, robot.received("rotate").count);
+			assertEquals(Direction.RIGHT, robot.received("rotate").args[0]);
 
 			gameController.rotateRobot(robot, Direction.UP);
-			//assert that the robot has not rotated
+			assertEquals(2, robot.received("rotate").count);
+		}
+
+		[Test]
+		public function testCheckpointReached():void
+		{
+			var robot:MockRobot = new MockRobot();
+			var floor:IFloor = new MockFloor();
+
+			//No robot operation should be aborted
+			gameController.checkpointReached(null, null, floor);
+			assertEquals(0, robot.received("set lastCheckpoint").count);
+
+			//No currentLocation operation should be aborted
+			gameController.checkpointReached(robot, null, null);
+			assertEquals(0, robot.received("set lastCheckpoint").count);
+
+			//preconditions not met operation should be aborted
+			gameController.checkpointReached(robot, floor, floor);
+			assertEquals(0, robot.received("set lastCheckpoint").count);
+
+			//preconditions met, assert robot updates.
+			gameController.checkpointReached(robot, null, floor);
+			assertEquals(1, robot.received("set lastCheckpoint").count);
+			assertEquals(floor, robot.received("set lastCheckpoint").args[0]);
 		}
 
 		//--------------------------------------------------------------------------

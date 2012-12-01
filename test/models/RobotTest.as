@@ -4,15 +4,16 @@ package models
 
 	import events.RobotEvent;
 
+	import interfaces.IFloor;
 	import interfaces.IRobot;
 	import interfaces.IUpgrade;
 
+	import models.floor.mocks.MockFloor;
 	import models.mocks.MockUpgrade;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNotNull;
-	import org.flexunit.asserts.assertNull;
 
 	public class RobotTest
 	{
@@ -173,6 +174,22 @@ package models
 			assertEquals(0, robot.lives);
 			assertEquals(3, destroyedCount);
 			assertEquals(1, eliminatedCount);
+		}
+
+		[Test]
+		public function testSetLastCheckpoint():void
+		{
+			var floor:IFloor = new MockFloor();
+
+			//Archive updates when lastCheckpoint updates
+			robot.lastCheckpoint = floor;
+
+			assertEquals(floor, robot.archiveLocation);
+
+			//Archive location doesn't update on null lastCheckpoint
+			robot.lastCheckpoint = null;
+
+			assertEquals(floor, robot.archiveLocation);
 		}
 
 		//--------------------------------------------------------------------------

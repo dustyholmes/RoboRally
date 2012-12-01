@@ -20,6 +20,9 @@ package interfaces
 		function get archiveLocation():IFloor
 		function set archiveLocation(value:IFloor):void;
 
+		function get lastCheckpoint():IFloor
+		function set lastCheckpoint(value:IFloor):void;
+
 		function get program():Vector.<IProgram>;
 		function set program(value:Vector.<IProgram>):void;
 
