@@ -206,6 +206,10 @@ package models
 				if (lives == 0)
 					dispatchEvent(new RobotEvent(RobotEvent.ELIMINATED));
 			}
+			else if (damage < 0)
+			{
+				this._damage = 0;
+			}
 		}
 
 		public function addUpgrade(upgrade:IUpgrade):void

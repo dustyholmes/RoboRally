@@ -156,7 +156,17 @@ package models
 			robot.addEventListener(RobotEvent.DESTROYED, destroyedHandler);
 			robot.addEventListener(RobotEvent.ELIMINATED, eliminatedHandler);
 
-			robot.takeDamage(3);
+			robot.takeDamage(-1);
+
+			assertEquals(0, robot.damage);
+			assertEquals(3, robot.lives);
+
+			robot.takeDamage(4);
+
+			assertEquals(4, robot.damage);
+			assertEquals(3, robot.lives);
+
+			robot.takeDamage(-1);
 
 			assertEquals(3, robot.damage);
 			assertEquals(3, robot.lives);

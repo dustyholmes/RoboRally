@@ -1,5 +1,7 @@
 package models.floor
 {
+	import events.ControllerEvent;
+
 	import interfaces.IGameController;
 
 	public class RepairFloor extends BaseFloor
@@ -19,6 +21,8 @@ package models.floor
 		public function RepairFloor(controller:IGameController)
 		{
 			super(controller);
+
+			controller.addEventListener(ControllerEvent.REPAIR, repairEventHandler, false, 0, true);
 		}
 
 		//--------------------------------------------------------------------------
@@ -44,6 +48,14 @@ package models.floor
 		//  Protected Methods
 		//
 		//--------------------------------------------------------------------------
+
+		protected function repairEventHandler(event:ControllerEvent):void
+		{
+			if (!occupant)
+				return;
+
+			controller.repairRobot(occupant);
+		}
 
 		//--------------------------------------------------------------------------
 		//

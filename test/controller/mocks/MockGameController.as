@@ -57,19 +57,24 @@ package controller.mocks
 		//
 		//--------------------------------------------------------------------------
 
+		public function checkpointReached(robot:IRobot, requiredCheckpoint:IFloor, currentLocation:IFloor):void
+		{
+			appendSpyResult("checkpointReached", [robot, requiredCheckpoint, currentLocation]);
+		}
+
 		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
 		{
 			appendSpyResult("moveRobot", [robot, direction, currentLocation]);
 		}
 
+		public function repairRobot(robot:IRobot):void
+		{
+			appendSpyResult("repairRobot", [robot]);
+		}
+
 		public function rotateRobot(robot:IRobot, direction:String):void
 		{
 			appendSpyResult("rotateRobot", [robot, direction]);
-		}
-
-		public function checkpointReached(robot:IRobot, requiredCheckpoint:IFloor, currentLocation:IFloor):void
-		{
-			appendSpyResult("checkpointReached", [robot, requiredCheckpoint, currentLocation]);
 		}
 
 		//--------------------------------------------------------------------------

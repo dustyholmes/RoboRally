@@ -128,6 +128,20 @@ package controller
 			assertEquals(floor, robot.received("set lastCheckpoint").args[0]);
 		}
 
+		[Test]
+		public function testRepairRobot():void
+		{
+			var robot:MockRobot = new MockRobot();
+
+			//No robot: Operation is aborted
+			gameController.repairRobot(null);
+
+			//Robot is repaired.
+			gameController.repairRobot(robot);
+			assertEquals(1, robot.received("takeDamage").count);
+			assertEquals(-1, robot.received("takeDamage").args[0]);
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods
