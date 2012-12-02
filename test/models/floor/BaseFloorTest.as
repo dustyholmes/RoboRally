@@ -1,16 +1,16 @@
 package models.floor
 {
-	import controller.mocks.MockGameController;
+	import flash.events.Event;
 
 	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	import models.floor.BaseFloor;
-
-	import models.mocks.MockRobot;
+	import mockolate.nice;
+	import mockolate.prepare;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
+	import org.flexunit.async.Async;
 
 	public class BaseFloorTest
 	{
@@ -51,10 +51,18 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(BaseFloorTest,
+					prepare(IGameController, IRobot),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
-			controller = new MockGameController();
+			controller = nice(IGameController);
 			boardElement = new BaseFloor(controller);
 		}
 
@@ -68,7 +76,7 @@ package models.floor
 		[Test]
 		public function testOccupant():void
 		{
-			var robot:IRobot = new MockRobot();
+			var robot:IRobot = nice(IRobot);
 
 			assertNull(boardElement.occupant);
 

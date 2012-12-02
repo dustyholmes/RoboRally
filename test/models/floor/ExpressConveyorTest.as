@@ -2,17 +2,20 @@ package models.floor
 {
 	import constants.Direction;
 
-	import controller.mocks.MockGameController;
-
 	import events.ControllerEvent;
 
+	import flash.events.Event;
+
+	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	import models.floor.ExpressConveyor;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
 
-	import models.mocks.MockRobot;
-
-	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.async.Async;
+	import org.hamcrest.assertThat;
 
 	public class ExpressConveyorTest
 	{
@@ -39,7 +42,7 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
-		protected var gameController:MockGameController;
+		protected var gameController:IGameController;
 		protected var conveyor:ExpressConveyor;
 
 		//--------------------------------------------------------------------------
@@ -54,10 +57,20 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(ExpressConveyorTest,
+					prepare(IGameController, IRobot),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
-			gameController = new MockGameController();
+			gameController = nice(IGameController);
+
+			mock(gameController).asEventDispatcher();
 		}
 
 		[After]
@@ -69,17 +82,15 @@ package models.floor
 		[Test]
 		public function testExpressConvey():void
 		{
+			var robot:IRobot = nice(IRobot);
+
 			conveyor = new ExpressConveyor(gameController, Direction.UP);
-			var robot:IRobot = new MockRobot();
 			conveyor.occupant = robot;
 
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.EXPRESS_CONVEY));
 
-			assertEquals(1, gameController.received("moveRobot").count);
-			assertEquals(3, gameController.received("moveRobot").args.length);
-			assertEquals(robot, gameController..received("moveRobot").args[0]);
-			assertEquals(Direction.UP, gameController.received("moveRobot").args[1]);
-			assertEquals(conveyor, gameController.received("moveRobot").args[2]);
+			assertThat(gameController, received().method("moveRobot").times(1));
+			assertThat(gameController, received().method("moveRobot").args(robot, Direction.UP, conveyor));
 		}
 
 		//--------------------------------------------------------------------------

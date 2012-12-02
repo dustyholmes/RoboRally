@@ -2,15 +2,19 @@ package models
 {
 	import constants.Direction;
 
+	import flash.events.Event;
+
 	import interfaces.IFloor;
 	import interfaces.IPassage;
 	import interfaces.IRobot;
 
-	import models.floor.mocks.MockFloor;
-	import models.mocks.MockRobot;
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
+	import mockolate.stub;
 
-	import org.flexunit.asserts.assertEquals;
-	import org.flexunit.asserts.assertNull;
+	import org.flexunit.assertThat;
+	import org.flexunit.async.Async;
 
 	public class BoardTest
 	{
@@ -50,6 +54,14 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(BoardTest,
+					prepare(IFloor, IRobot, IPassage),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
@@ -63,50 +75,95 @@ package models
 		}
 
 		[Test]
-		public function testMoveRobot():void
+		public function testMoveRobotValid():void
 		{
-			var robot:IRobot = new MockRobot();
-			var floorA:IFloor = new MockFloor();
-			var floorB:IFloor = new MockFloor();
-			var floorC:IFloor = new MockFloor();
-			var passage:IPassage = new Passage(floorA, floorB, false);
-			var walled:IPassage = new Passage(floorA, floorC, true);
+			var robot:IRobot = nice(IRobot);
+			var floorA:IFloor = nice(IFloor);
+			var floorB:IFloor = nice(IFloor);
+			var passage:IPassage = nice(IPassage);
 
-			floorA.occupant = robot;
+			stub(floorA).getter("occupant").returns(robot);
+			stub(floorB).getter("occupant").returns(null);
+			stub(passage).getter("to").returns(floorA);
+			stub(passage).getter("from").returns(floorB);
+			stub(passage).getter("hasWall").returns(false);
 
-			board.addMapEntry(floorA, passage, walled, null, null);
+			board.addMapEntry(floorA, passage, null, null, null);
+			board.addMapEntry(floorB, null, passage, null, null);
 
 			//Everything is valid and passed
 			board.moveRobot(robot, Direction.UP, floorA);
 
-			assertNull(floorA.occupant);
-			assertEquals(robot, floorB.occupant);
+			assertThat(floorA, received().setter("occupant").args(null));
+			assertThat(floorB, received().setter("occupant").args(robot));
 
 			//Missing floor, the robot is found properly
-			floorA.occupant = robot;
-			floorB.occupant = null;
 			board.moveRobot(robot, Direction.UP);
 
-			assertNull(floorA.occupant);
-			assertEquals(robot, floorB.occupant);
+			assertThat(floorA, received().setter("occupant").args(null));
+			assertThat(floorB, received().setter("occupant").args(robot));
+		}
 
-			//No valid map
-			board.moveRobot(robot, Direction.UP);
+		[Test]
+		public function testMoveRobotNoMap():void
+		{
+			var robot:IRobot = nice(IRobot);
+			var floorA:IFloor = nice(IFloor);
 
-			assertEquals(robot, floorB.occupant);
+			stub(floorA).getter("occupant").returns(robot);
+
+			//Everything is valid and passed
+			board.moveRobot(robot, Direction.UP, floorA);
+
+			assertThat(floorA, received().setter("occupant").times(0));
+		}
+
+		[Test]
+		public function testMoveRobotInFromPosition():void
+		{
+			var robot:IRobot = nice(IRobot);
+			var floorA:IFloor = nice(IFloor);
+			var floorB:IFloor = nice(IFloor);
+			var passage:IPassage = nice(IPassage);
+
+			stub(floorA).getter("occupant").returns(null);
+			stub(floorB).getter("occupant").returns(robot);
+			stub(passage).getter("to").returns(floorA);
+			stub(passage).getter("from").returns(floorB);
+			stub(passage).getter("hasWall").returns(false);
+
+			board.addMapEntry(floorA, passage, null, null, null);
+			board.addMapEntry(floorB, null, passage, null, null);
 
 			//currentLocation is passage.from
-			board.addMapEntry(floorB, null, passage, null, null);
 			board.moveRobot(robot, Direction.DOWN, floorB);
 
-			assertNull(floorB.occupant);
-			assertEquals(robot, floorA.occupant);
+			assertThat(floorA, received().setter("occupant").args(robot));
+			assertThat(floorB, received().setter("occupant").args(null));
+		}
 
-			//Doesn't move through walls
-			board.moveRobot(robot, Direction.DOWN, floorA);
+		[Test]
+		public function testMoveRobotThroughWall():void
+		{
+			var robot:IRobot = nice(IRobot);
+			var floorA:IFloor = nice(IFloor);
+			var floorB:IFloor = nice(IFloor);
+			var passage:IPassage = nice(IPassage);
 
-			assertNull(floorC.occupant);
-			assertEquals(robot, floorA.occupant);
+			stub(floorA).getter("occupant").returns(robot);
+			stub(floorB).getter("occupant").returns(null);
+			stub(passage).getter("to").returns(floorA);
+			stub(passage).getter("from").returns(floorB);
+			stub(passage).getter("hasWall").returns(true);
+
+			board.addMapEntry(floorA, passage, null, null, null);
+			board.addMapEntry(floorB, null, passage, null, null);
+
+			//currentLocation is passage.from
+			board.moveRobot(robot, Direction.UP, floorA);
+
+			assertThat(floorA, received().setter("occupant").times(0));
+			assertThat(floorB, received().setter("occupant").times(0));
 		}
 
 		//--------------------------------------------------------------------------

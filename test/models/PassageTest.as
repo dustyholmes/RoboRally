@@ -2,13 +2,17 @@ package models
 {
 	import constants.Direction;
 
+	import flash.events.Event;
+
 	import interfaces.IFloor;
 	import interfaces.IPassage;
 
-	import models.floor.mocks.MockFloor;
+	import mockolate.nice;
+	import mockolate.prepare;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
+	import org.flexunit.async.Async;
 
 	public class PassageTest
 	{
@@ -45,6 +49,15 @@ package models
 		//  Public Methods
 		//
 		//--------------------------------------------------------------------------
+
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(PassageTest,
+					prepare(IFloor),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
@@ -61,8 +74,8 @@ package models
 		[Test]
 		public function testConstructor():void
 		{
-			var floorA:IFloor = new MockFloor();
-			var floorB:IFloor = new MockFloor();
+			var floorA:IFloor = nice(IFloor);
+			var floorB:IFloor = nice(IFloor);
 
 			var passage:IPassage = new Passage(floorA, floorB, true, Direction.UP);
 
@@ -88,9 +101,9 @@ package models
 		[Test]
 		public function testGetPartner():void
 		{
-			var floorA:IFloor = new MockFloor();
-			var floorB:IFloor = new MockFloor();
-			var floorC:IFloor = new MockFloor();
+			var floorA:IFloor = nice(IFloor);
+			var floorB:IFloor = nice(IFloor);
+			var floorC:IFloor = nice(IFloor);
 
 			var passage:IPassage = new Passage(floorA, floorB, true, Direction.UP);
 

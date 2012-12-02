@@ -2,17 +2,20 @@ package models.floor
 {
 	import constants.Direction;
 
-	import controller.mocks.MockGameController;
-
 	import events.ControllerEvent;
 
+	import flash.events.Event;
+
+	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	import models.floor.Gear;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
 
-	import models.mocks.MockRobot;
-
-	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.assertThat;
+	import org.flexunit.async.Async;
 
 	public class GearTest
 	{
@@ -38,7 +41,7 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
-		protected var gameController:MockGameController;
+		protected var gameController:IGameController;
 		protected var gear:Gear;
 
 		//--------------------------------------------------------------------------
@@ -53,10 +56,20 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(GearTest,
+					prepare(IGameController, IRobot),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
-			gameController = new MockGameController();
+			gameController = nice(IGameController);
+
+			mock(gameController).asEventDispatcher();
 		}
 
 		[After]
@@ -65,19 +78,17 @@ package models.floor
 			gameController = null;
 		}
 
-
 		[Test]
 		public function testRotateOccupant():void
 		{
+			var robot:IRobot = nice(IRobot);
+
 			gear = new Gear(gameController, Direction.LEFT);
-			var robot:IRobot = new MockRobot();
 			gear.occupant = robot;
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.ROTATE));
 
-			assertEquals(1, gameController.received("rotateRobot").count);
-			assertEquals(2, gameController.received("rotateRobot").args.length);
-			assertEquals(robot, gameController.received("rotateRobot").args[0]);
-			assertEquals(Direction.LEFT, gameController.received("rotateRobot").args[1]);
+			assertThat(gameController, received().method('rotateRobot').times(1));
+			assertThat(gameController, received().method('rotateRobot').args(robot, Direction.LEFT));
 		}
 
 		//--------------------------------------------------------------------------

@@ -1,13 +1,19 @@
 package models.floor
 {
-	import controller.mocks.MockGameController;
+	import flash.events.Event;
 
 	import interfaces.IFloor;
+	import interfaces.IGameController;
+	import interfaces.IRobot;
+
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
 
 	import models.*;
-	import models.mocks.MockRobot;
 
-	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.assertThat;
+	import org.flexunit.async.Async;
 
 	public class HoleTest
 	{
@@ -33,7 +39,7 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
-		protected var gameController:MockGameController;
+		protected var gameController:IGameController;
 
 		//--------------------------------------------------------------------------
 		//
@@ -47,21 +53,18 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------
-		//
-		//  Protected Methods
-		//
-		//--------------------------------------------------------------------------
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(HoleTest,
+					prepare(IGameController, IRobot),
+					Event.COMPLETE);
+		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Private Methods
-		//
-		//--------------------------------------------------------------------------
 		[Before]
 		public function setUp():void
 		{
-			gameController = new MockGameController();
+			gameController = nice(IGameController);
 		}
 
 		[After]
@@ -73,15 +76,27 @@ package models.floor
 		[Test]
 		public function testOccupant():void
 		{
-			//When an occupant enters a hole, it should take a lethal amount of damage.
+			var robot:IRobot = nice(IRobot);
 			var hole:IFloor = new Hole(gameController);
-			var robot:MockRobot = new MockRobot();
 
+			//When an occupant enters a hole, it should take a lethal amount of damage.
 			hole.occupant = robot;
 
-			assertEquals(1, gameController.received("damageRobot").count);
-			assertEquals(robot, gameController.received("damageRobot").args[0]);
-			assertEquals(Robot.LETHAL_DAMAGE, gameController.received("damageRobot").args[1]);
+			assertThat(gameController, received().method('damageRobot'));
+			assertThat(gameController, received().method('damageRobot').args(robot, Robot.LETHAL_DAMAGE));
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Protected Methods
+		//
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private Methods
+		//
+		//--------------------------------------------------------------------------
+
 	}
 }

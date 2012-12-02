@@ -2,17 +2,20 @@ package models.floor
 {
 	import constants.Direction;
 
-	import controller.mocks.MockGameController;
-
 	import events.ControllerEvent;
 
+	import flash.events.Event;
+
+	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	import models.floor.Conveyor;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
 
-	import models.mocks.MockRobot;
-
-	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.assertThat;
+	import org.flexunit.async.Async;
 
 	public class ConveyorTest
 	{
@@ -38,7 +41,7 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
-		protected var gameController:MockGameController;
+		protected var gameController:IGameController;
 		protected var conveyor:Conveyor;
 
 		//--------------------------------------------------------------------------
@@ -53,10 +56,20 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(ConveyorTest,
+					prepare(IGameController, IRobot),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
-			gameController = new MockGameController();
+			gameController = nice(IGameController);
+
+			mock(gameController).asEventDispatcher();
 		}
 
 		[After]
@@ -68,48 +81,45 @@ package models.floor
 		[Test]
 		public function testOccupant():void
 		{
+			var robot:IRobot = nice(IRobot);
+
 			//When rotation is not set, occupants should not rotate
 			conveyor = new Conveyor(gameController, Direction.UP);
-			var robot:IRobot = new MockRobot();
 			conveyor.occupant = robot;
 
-			assertEquals(0, gameController.received("rotateRobot").count);
+			assertThat(gameController, received().method("rotateRobot").never());
 
 			//When rotation is set, occupant should rotate
 			conveyor = new Conveyor(gameController, Direction.UP, Direction.RIGHT);
 			conveyor.occupant = robot;
 
-			assertEquals(1, gameController.received("rotateRobot").count);
-			assertEquals(2, gameController.received("rotateRobot").args.length);
-			assertEquals(robot, gameController.received("rotateRobot").args[0]);
-			assertEquals(Direction.RIGHT, gameController.received("rotateRobot").args[1]);
+			assertThat(gameController, received().method("rotateRobot").times(1));
+			assertThat(gameController, received().method("rotateRobot").args(robot, Direction.RIGHT));
 
 			//When the rotation was invalid, the occupant should not rotate
 			conveyor = new Conveyor(gameController, Direction.UP, Direction.UP);
 			conveyor.occupant = robot;
 
-			assertEquals(1, gameController.received("rotateRobot").count);
+			assertThat(gameController, received().method("rotateRobot").times(1));
 		}
 
 		[Test]
 		public function testConvey():void
 		{
+			var robot:IRobot = nice(IRobot);
+
 			conveyor = new Conveyor(gameController, Direction.UP);
-			var robot:IRobot = new MockRobot();
 			conveyor.occupant = robot;
 
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.CONVEY));
 
-			assertEquals(1, gameController.received("moveRobot").count);
-			assertEquals(3, gameController.received("moveRobot").args.length);
-			assertEquals(robot, gameController..received("moveRobot").args[0]);
-			assertEquals(Direction.UP, gameController.received("moveRobot").args[1]);
-			assertEquals(conveyor, gameController.received("moveRobot").args[2]);
+			assertThat(gameController, received().method("moveRobot").times(1));
+			assertThat(gameController, received().method("moveRobot").args(robot, Direction.UP, conveyor));
 
 			//Regular conveyors should not convey on EXPRESS_CONVEY
 			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.EXPRESS_CONVEY));
 
-			assertEquals(1, gameController.received("moveRobot").count);
+			assertThat(gameController, received().method("moveRobot").times(1));
 		}
 
 		//--------------------------------------------------------------------------

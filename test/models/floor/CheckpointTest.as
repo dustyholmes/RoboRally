@@ -1,10 +1,16 @@
 package models.floor
 {
-	import controller.mocks.MockGameController;
+	import flash.events.Event;
 
-	import models.mocks.MockRobot;
+	import interfaces.IGameController;
+	import interfaces.IRobot;
 
-	import org.flexunit.asserts.assertEquals;
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
+
+	import org.flexunit.assertThat;
+	import org.flexunit.async.Async;
 
 	public class CheckpointTest
 	{
@@ -30,7 +36,7 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 		private var boardElement:Checkpoint;
-		private var gameController:MockGameController;
+		private var gameController:IGameController;
 
 		//--------------------------------------------------------------------------
 		//
@@ -44,10 +50,18 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(CheckpointTest,
+					prepare(IGameController, IRobot),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
-			gameController = new MockGameController();
+			gameController = nice(IGameController);
 			boardElement = new Checkpoint(gameController);
 		}
 
@@ -61,29 +75,25 @@ package models.floor
 		[Test]
 		public function testOccupant():void
 		{
-			var robot:MockRobot = new MockRobot();
+			var robot:IRobot = nice(IRobot);
 			
 			//A robot entering a checkpoint
 			boardElement.occupant = robot;
 
-			assertEquals(1, gameController.received("checkpointReached").count);
-			assertEquals(robot, gameController.received("checkpointReached").args[0]);
-			assertEquals(null, gameController.received("checkpointReached").args[1]);
-			assertEquals(boardElement, gameController.received("checkpointReached").args[2]);
+			assertThat(gameController, received().method('checkpointReached').times(1));
+			assertThat(gameController, received().method('checkpointReached').args(robot, null, boardElement));
 
 			//A robot leaving a checkpoint
 			boardElement.occupant = null;
 
-			assertEquals(1, gameController.received("checkpointReached").count);
+			assertThat(gameController, received().method('checkpointReached').times(1));
 
 			//A robot entering a checkpoint with a requirement
 			var checkpointWithRequirement:Checkpoint = new Checkpoint(gameController, boardElement);
 			checkpointWithRequirement.occupant = robot;
 
-			assertEquals(2, gameController.received("checkpointReached").count);
-			assertEquals(robot, gameController.received("checkpointReached").args[0]);
-			assertEquals(boardElement, gameController.received("checkpointReached").args[1]);
-			assertEquals(checkpointWithRequirement, gameController.received("checkpointReached").args[2]);
+			assertThat(gameController, received().method('checkpointReached').times(2));
+			assertThat(gameController, received().method('checkpointReached').args(robot, boardElement, checkpointWithRequirement));
 		}
 
 		//--------------------------------------------------------------------------

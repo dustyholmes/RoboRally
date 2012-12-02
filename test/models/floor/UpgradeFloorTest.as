@@ -1,14 +1,19 @@
 package models.floor
 {
-	import controller.mocks.MockGameController;
-
 	import events.ControllerEvent;
 
+	import flash.events.Event;
+
+	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	import models.mocks.MockRobot;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
 
-	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.assertThat;
+	import org.flexunit.async.Async;
 
 	public class UpgradeFloorTest
 	{
@@ -34,7 +39,7 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 		private var boardElement:UpgradeFloor;
-		private var controller:MockGameController;
+		private var gameController:IGameController;
 
 		//--------------------------------------------------------------------------
 		//
@@ -48,36 +53,47 @@ package models.floor
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(UpgradeFloorTest,
+					prepare(IGameController, IRobot),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
-			controller = new MockGameController();
-			boardElement = new UpgradeFloor(controller);
+			gameController = nice(IGameController);
+
+			mock(gameController).asEventDispatcher();
+
+			boardElement = new UpgradeFloor(gameController);
 		}
 
 		[After]
 		public function tearDown():void
 		{
-			controller = null;
+			gameController = null;
 			boardElement = null;
 		}
 
 		[Test]
 		public function testUpgradeOccupant():void
 		{
-			var robot:IRobot = new MockRobot();
+			var robot:IRobot = nice(IRobot);
 
 			//No occupant, no exceptions
-			controller.dispatchEvent(new ControllerEvent(ControllerEvent.REPAIR));
+			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.REPAIR));
 
-			assertEquals(0, controller.received("upgradeRobot").count);
+			assertThat(gameController, received().method("upgradeRobot").times(0));
 
 			//upgrade is executed during the repair phase
 			boardElement.occupant = robot;
-			controller.dispatchEvent(new ControllerEvent(ControllerEvent.REPAIR));
+			gameController.dispatchEvent(new ControllerEvent(ControllerEvent.REPAIR));
 
-			assertEquals(1, controller.received("upgradeRobot").count);
-			assertEquals(robot, controller.received("upgradeRobot").args[0]);
+			assertThat(gameController, received().method("upgradeRobot").times(1));
+			assertThat(gameController, received().method("upgradeRobot").args(robot));
 		}
 
 		//--------------------------------------------------------------------------

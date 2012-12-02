@@ -4,16 +4,19 @@ package models
 
 	import events.RobotEvent;
 
+	import flash.events.Event;
+
 	import interfaces.IFloor;
 	import interfaces.IRobot;
 	import interfaces.IUpgrade;
 
-	import models.floor.mocks.MockFloor;
-	import models.mocks.MockUpgrade;
+	import mockolate.nice;
+	import mockolate.prepare;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNotNull;
+	import org.flexunit.async.Async;
 
 	public class RobotTest
 	{
@@ -55,6 +58,14 @@ package models
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(RobotTest,
+					prepare(IFloor, IUpgrade),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
@@ -85,7 +96,7 @@ package models
 		[Test]
 		public function testRemoveUpgrade():void
 		{
-			var upgrade:IUpgrade = new MockUpgrade();
+			var upgrade:IUpgrade = nice(IUpgrade);
 
 			//Verify that nothing awful happens if an invalid upgrade is removed.
 			robot.removeUpgrade(upgrade);
@@ -121,7 +132,7 @@ package models
 		[Test]
 		public function testAddUpgrade():void
 		{
-			var upgrade:IUpgrade = new MockUpgrade();
+			var upgrade:IUpgrade = nice(IUpgrade);
 
 			//Verify that the upgrade is added
 			robot.addUpgrade(upgrade);
@@ -189,7 +200,7 @@ package models
 		[Test]
 		public function testSetLastCheckpoint():void
 		{
-			var floor:IFloor = new MockFloor();
+			var floor:IFloor = nice(IFloor);
 
 			//Archive updates when lastCheckpoint updates
 			robot.lastCheckpoint = floor;

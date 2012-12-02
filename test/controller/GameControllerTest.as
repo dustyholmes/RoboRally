@@ -2,15 +2,19 @@ package controller
 {
 	import constants.Direction;
 
+	import flash.events.Event;
+
+	import interfaces.IBoard;
 	import interfaces.IFloor;
 	import interfaces.IGameController;
 	import interfaces.IRobot;
 
-	import models.floor.mocks.MockFloor;
-	import models.mocks.MockBoard;
-	import models.mocks.MockRobot;
+	import mockolate.nice;
+	import mockolate.prepare;
+	import mockolate.received;
 
-	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.assertThat;
+	import org.flexunit.async.Async;
 
 	public class GameControllerTest
 	{
@@ -37,7 +41,7 @@ package controller
 		//--------------------------------------------------------------------------
 
 		private var gameController:IGameController;
-		private var board:MockBoard;
+		private var board:IBoard;
 
 		//--------------------------------------------------------------------------
 		//
@@ -51,10 +55,18 @@ package controller
 		//
 		//--------------------------------------------------------------------------
 
+		[BeforeClass(async, timeout=5000)]
+		public static function prepareMockolates():void
+		{
+			Async.proceedOnEvent(GameControllerTest,
+					prepare(IFloor, IRobot, IBoard),
+					Event.COMPLETE);
+		}
+
 		[Before]
 		public function setUp():void
 		{
-			board = new MockBoard();
+			board = nice(IBoard);
 			gameController = new GameController(null, board);
 		}
 
@@ -68,78 +80,87 @@ package controller
 		[Test]
 		public function testMoveRobot():void
 		{
-			var robot:IRobot = new MockRobot();
-			var floor:IFloor = new MockFloor();
+			var robot:IRobot = nice(IRobot);
+			var floor:IFloor = nice(IFloor);
 
+			//move with no floor
 			gameController.moveRobot(robot, Direction.UP);
-			assertEquals(1, board.received("moveRobot").count);
-			assertEquals(robot, board.received("moveRobot").args[0]);
-			assertEquals(Direction.UP, board.received("moveRobot").args[1]);
-			assertEquals(null, board.received("moveRobot").args[2]);
 
+			assertThat(board, received().method("moveRobot").times(1));
+			assertThat(board, received().method("moveRobot").args(robot, Direction.UP, null));
+
+			//Move with a floor
 			gameController.moveRobot(robot, Direction.DOWN, floor);
-			assertEquals(2, board.received("moveRobot").count);
-			assertEquals(robot, board.received("moveRobot").args[0]);
-			assertEquals(Direction.DOWN, board.received("moveRobot").args[1]);
-			assertEquals(floor, board.received("moveRobot").args[2]);
 
+			assertThat(board, received().method("moveRobot").times(2));
+			assertThat(board, received().method("moveRobot").args(robot, Direction.DOWN, floor));
+
+			//Bad direction
 			gameController.moveRobot(robot, "invalid");
-			assertEquals(2, board.received("moveRobot").count);
+
+			assertThat(board, received().method("moveRobot").times(2));
 		}
 
 		[Test]
 		public function testRotateRobot():void
 		{
-			var robot:MockRobot = new MockRobot();
+			var robot:IRobot = nice(IRobot);
 
+			//Rotate with a valid direction
 			gameController.rotateRobot(robot, Direction.LEFT);
-			assertEquals(1, robot.received("rotate").count);
-			assertEquals(Direction.LEFT, robot.received("rotate").args[0]);
 
-			gameController.rotateRobot(robot, Direction.RIGHT);
-			assertEquals(2, robot.received("rotate").count);
-			assertEquals(Direction.RIGHT, robot.received("rotate").args[0]);
+			assertThat(robot, received().method("rotate").times(1));
+			assertThat(robot, received().method("rotate").args(Direction.LEFT));
 
+			//Rotate with an invalid direction
 			gameController.rotateRobot(robot, Direction.UP);
-			assertEquals(2, robot.received("rotate").count);
+
+			assertThat(robot, received().method("rotate").times(1));
 		}
 
 		[Test]
 		public function testCheckpointReached():void
 		{
-			var robot:MockRobot = new MockRobot();
-			var floor:IFloor = new MockFloor();
+			var robot:IRobot = nice(IRobot);
+			var floor:IFloor = nice(IFloor);
 
 			//No robot operation should be aborted
 			gameController.checkpointReached(null, null, floor);
-			assertEquals(0, robot.received("set lastCheckpoint").count);
+
+			assertThat(robot, received().setter("lastCheckpoint").times(0));
 
 			//No currentLocation operation should be aborted
 			gameController.checkpointReached(robot, null, null);
-			assertEquals(0, robot.received("set lastCheckpoint").count);
+
+			assertThat(robot, received().setter("lastCheckpoint").times(0));
 
 			//preconditions not met operation should be aborted
 			gameController.checkpointReached(robot, floor, floor);
-			assertEquals(0, robot.received("set lastCheckpoint").count);
+
+			assertThat(robot, received().setter("lastCheckpoint").times(0));
 
 			//preconditions met, assert robot updates.
 			gameController.checkpointReached(robot, null, floor);
-			assertEquals(1, robot.received("set lastCheckpoint").count);
-			assertEquals(floor, robot.received("set lastCheckpoint").args[0]);
+
+			assertThat(robot, received().setter("lastCheckpoint").times(1));
+			assertThat(robot, received().setter("lastCheckpoint").args(floor));
 		}
 
 		[Test]
 		public function testRepairRobot():void
 		{
-			var robot:MockRobot = new MockRobot();
+			var robot:IRobot = nice(IRobot);
 
 			//No robot: Operation is aborted
 			gameController.repairRobot(null);
 
+			assertThat(robot, received().method("takeDamage").times(0));
+
 			//Robot is repaired.
 			gameController.repairRobot(robot);
-			assertEquals(1, robot.received("takeDamage").count);
-			assertEquals(-1, robot.received("takeDamage").args[0]);
+
+			assertThat(robot, received().method("takeDamage").times(1));
+			assertThat(robot, received().method("takeDamage").args(-1));
 		}
 
 		[Test]
@@ -151,15 +172,17 @@ package controller
 		[Test]
 		public function testDamageRobot():void
 		{
-			var robot:MockRobot = new MockRobot();
+			var robot:IRobot = nice(IRobot);
 
 			//No robot, no exceptions
 			gameController.damageRobot(null, 0);
+			assertThat(robot, received().method("takeDamage").times(0));
 
 			//Robot takes damage
 			gameController.damageRobot(robot, 1);
-			assertEquals(1, robot.received("takeDamage").count);
-			assertEquals(1, robot.received("takeDamage").args[0]);
+
+			assertThat(robot, received().method("takeDamage").times(1));
+			assertThat(robot, received().method("takeDamage").args(1));
 		}
 
 		//--------------------------------------------------------------------------
