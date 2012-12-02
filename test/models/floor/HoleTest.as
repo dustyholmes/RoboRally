@@ -79,9 +79,9 @@ package models.floor
 
 			hole.occupant = robot;
 
-			assertEquals(1, robot.received("takeDamage").count);
-			assertEquals(1, robot.received("takeDamage").args.length);
-			assertEquals(Robot.LETHAL_DAMAGE, robot.received("takeDamage").args[0]);
+			assertEquals(1, gameController.received("damageRobot").count);
+			assertEquals(robot, gameController.received("damageRobot").args[0]);
+			assertEquals(Robot.LETHAL_DAMAGE, gameController.received("damageRobot").args[1]);
 		}
 	}
 }

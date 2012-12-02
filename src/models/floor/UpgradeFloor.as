@@ -1,5 +1,7 @@
 package models.floor
 {
+	import events.ControllerEvent;
+
 	import interfaces.IGameController;
 
 	public class UpgradeFloor extends RepairFloor
@@ -44,6 +46,16 @@ package models.floor
 		//  Protected Methods
 		//
 		//--------------------------------------------------------------------------
+
+		override protected function repairEventHandler(event:ControllerEvent):void
+		{
+			super.repairEventHandler(event);
+
+			if (!occupant)
+				return;
+
+			controller.upgradeRobot(occupant);
+		}
 
 		//--------------------------------------------------------------------------
 		//

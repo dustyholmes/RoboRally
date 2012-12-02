@@ -62,6 +62,11 @@ package controller.mocks
 			appendSpyResult("checkpointReached", [robot, requiredCheckpoint, currentLocation]);
 		}
 
+		public function damageRobot(robot:IRobot, damage:uint):void
+		{
+			appendSpyResult("damageRobot", [robot, damage]);
+		}
+
 		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
 		{
 			appendSpyResult("moveRobot", [robot, direction, currentLocation]);
@@ -75,6 +80,11 @@ package controller.mocks
 		public function rotateRobot(robot:IRobot, direction:String):void
 		{
 			appendSpyResult("rotateRobot", [robot, direction]);
+		}
+
+		public function upgradeRobot(robot:IRobot):void
+		{
+			appendSpyResult("upgradeRobot", [robot]);
 		}
 
 		//--------------------------------------------------------------------------

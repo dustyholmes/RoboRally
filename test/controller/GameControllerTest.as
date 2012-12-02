@@ -142,6 +142,26 @@ package controller
 			assertEquals(-1, robot.received("takeDamage").args[0]);
 		}
 
+		[Test]
+		public function testUpgradeRobot():void
+		{
+			//TODO: Test that the robot gets upgraded.
+		}
+
+		[Test]
+		public function testDamageRobot():void
+		{
+			var robot:MockRobot = new MockRobot();
+
+			//No robot, no exceptions
+			gameController.damageRobot(null, 0);
+
+			//Robot takes damage
+			gameController.damageRobot(robot, 1);
+			assertEquals(1, robot.received("takeDamage").count);
+			assertEquals(1, robot.received("takeDamage").args[0]);
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected Methods

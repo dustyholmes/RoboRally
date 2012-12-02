@@ -67,6 +67,14 @@ package controller
 			robot.lastCheckpoint = currentLocation;
 		}
 
+		public function damageRobot(robot:IRobot, damage:uint):void
+		{
+			if (!robot)
+				return;
+
+			robot.takeDamage(damage);
+		}
+
 		public function moveRobot(robot:IRobot, direction:String, currentLocation:IFloor = null):void
 		{
 			if (!DirectionUtil.isValid(direction))
@@ -89,6 +97,11 @@ package controller
 				return;
 
 			robot.rotate(direction);
+		}
+
+		public function upgradeRobot(robot:IRobot):void
+		{
+			//TODO: Upgrade the robot perhaps?
 		}
 
 		//--------------------------------------------------------------------------

@@ -42,7 +42,8 @@ package models.floor
 
 			super.occupant = value;
 
-			occupant.takeDamage(Robot.LETHAL_DAMAGE);
+			if (occupant)
+				controller.damageRobot(occupant, Robot.LETHAL_DAMAGE);
 		}
 
 		//--------------------------------------------------------------------------
