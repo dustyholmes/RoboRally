@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="50" height="50">
+	<fx:Script>
+		<![CDATA[
+			import assets.Assets;
+		]]>
+	</fx:Script>
+
+	<s:states>
+		<s:State id="normalState" name="normal" />
+		<s:State id="pusherState" name="pusher"/>
+		<s:State id="conveyorState" name="conveyor"/>
+		<s:State id="expressState" name="express"/>
+		<s:State id="gearState" name="gear"/>
+		<s:State id="holeState" name="hole"/>
+		<s:State id="checkpointState" name="checkpoint"/>
+		<s:State id="repairState" name="repair"/>
+		<s:State id="upgradeState" name="upgrade"/>
+	</s:states>
+
+	<s:BitmapImage top="0" bottom="0" right="0" left="0"
+				   source="{Assets.FLOOR_BASE}"
+				   source.gear="{Assets.FLOOR_GEAR}"/>
+</s:Group>
