@@ -1,17 +1,17 @@
 package interfaces
 {
-	public interface IUpgrade
+	public interface IUpgrade extends ICard
 	{
 		function get name():String;
 
 		function get description():String;
 
-		function get isElective():Boolean;
+		function get elective():Boolean;
 
-		function get isActive():Boolean;
+		function get active():Boolean;
 
-		function get useCount():Number;
+		function get uses():uint;
 
-		function get maxUseCount():Number;
+		function get useMaximum():uint;
 	}
 }
